@@ -8,7 +8,7 @@ cd pacaur
 makepkg -si
 
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash termite
+pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash termite-git
 
 # dotfiles
 cd
@@ -20,3 +20,8 @@ cd dotfiles
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
 mkdir $HOME/.vim/{backup,swap}
+
+# system
+echo tmpfs       /home/hsp/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=766 0 0 >> /etc/fstab
+echo tmpfs       /home/hsp/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=766 0 0 >> /etc/fstab
+echo tmpfs       /home/hsp/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab

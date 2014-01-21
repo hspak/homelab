@@ -15,7 +15,7 @@ gdisk
 #mount root and boot
 
 # install base
-pacstrap /mnt base base-devel gummiboot
+pacstrap /mnt base base-devel gummiboot git
 
 # mount 
 arch-chroot /mnt
