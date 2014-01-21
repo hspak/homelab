@@ -12,7 +12,7 @@ pacman -S freetype2-infinality-ultimate fontconfig-infinality-ultimate cairo-inf
 pacman -S xf86-input-synaptics
 
 # audio
-pacman -S pulseaudio alsa-utils pulseaudio-alsa
+pacman -S pulseaudio alsa-utils pulseaudio-alsa pavucontrol
 
 # Intel video
 pacman -S xf86-video-intel mesa mesa-libgl
@@ -34,7 +34,7 @@ cd /usr/share/fonts/local;mkfontdir
 pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger gdisk dosfstools ntfs-3g bzr libgnomeui
 
 # devel
-pacman -S ruby python python2 nodejs
+pacman -S ruby python python2 nodejs openssh
 
 # change bash to zsh
 chsh hsp
