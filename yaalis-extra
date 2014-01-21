@@ -4,11 +4,14 @@
 curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
 makepkg -si
 cower -d pacaur
+cd pacaur
+sudo pacman -U pacaur
 
 # extra
 pacaur -y dunst-git compton-git gtk-theme-elementary source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash
 
 # dotfiles
+cd
 git clone https://github.com/hspasta/dotfiles.git
 
 # vim

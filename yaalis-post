@@ -33,6 +33,9 @@ cd /usr/share/fonts/local;mkfontdir
 # useful
 pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger ruby python python2 nodejs
 
+# change bash to zsh
+chsh hsp
+
 # wm
 pacman -S i3 dmenu chromium nautilus
 
