@@ -5,7 +5,7 @@ curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
 makepkg -si
 cower -d pacaur
 cd pacaur
-sudo pacman -U pacaur
+makepkg -si
 
 # extra
 pacaur -y dunst-git compton-git gtk-theme-elementary source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash
@@ -13,8 +13,10 @@ pacaur -y dunst-git compton-git gtk-theme-elementary source-code-pro-fonts subli
 # dotfiles
 cd
 git clone https://github.com/hspasta/dotfiles.git
+cd dotfiles
+./deploy
 
 # vim
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
-mkdir /home/$USER/.vim/{backup,swap}
+mkdir $HOME/.vim/{backup,swap}
