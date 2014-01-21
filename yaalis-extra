@@ -8,7 +8,7 @@ cd pacaur
 makepkg -si
 
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash
+pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash termite
 
 # dotfiles
 cd

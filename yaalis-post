@@ -21,7 +21,7 @@ pacman -S xf86-video-intel mesa mesa-libgl
 pacman -S nvidia libvdpau
 
 # X
-pacman -S xorg-server xorg-xinit xorg-xsetroot
+pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap
 
 # Fonts
 pacman -S ttf-dejavu terminus-font ttf-symbola ttf-indixc-otf
@@ -31,11 +31,14 @@ pacman -S gnome-icon-theme elementary-icon-theme lxappearance gnome-themes-stand
 cd /usr/share/fonts/local;mkfontdir
 
 # useful
-pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger ruby python python2 nodejs
+pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger gdisk dosfstools ntfs-3g bzr libgnomeui
+
+# devel
+pacman -S ruby python python2 nodejs
 
 # change bash to zsh
 chsh hsp
 
 # wm
-pacman -S i3 dmenu chromium nautilus
+pacman -S i3 dmenu chromium nautilus wmname
 
