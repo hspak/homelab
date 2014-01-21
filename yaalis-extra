@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# AUR
+curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
+makepkg -si
+cower -d pacaur
+
 # extra
 pacaur -y dunst-git compton-git gtk-theme-elementary source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash
 
