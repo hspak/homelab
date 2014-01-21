@@ -15,10 +15,10 @@ pacman -S xf86-input-synaptics
 pacman -S pulseaudio alsa-utils pulseaudio-alsa pavucontrol
 
 # Intel video
-pacman -S xf86-video-intel mesa mesa-libgl
+pacman -S xf86-video-intel mesa mesa-libgl libva-intel-driver
 
 # Nvidia video
-pacman -S nvidia libvdpau
+pacman -S nvidia libvdpau libva-vdpau-driver
 
 # X
 pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap
@@ -31,7 +31,7 @@ pacman -S gnome-icon-theme elementary-icon-theme lxappearance gnome-themes-stand
 cd /usr/share/fonts/local;mkfontdir
 
 # useful
-pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger gdisk dosfstools ntfs-3g bzr libgnomeui
+pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger gdisk dosfstools ntfs-3g bzr libgnomeui mpv
 
 # devel
 pacman -S ruby python python2 nodejs openssh
