@@ -8,20 +8,25 @@ gdisk
 # efi code = ef00
 # efi partition size = 512M
 # efi mount to /boot
-#mkfs.vfat -F32 /dev/sd**
 
+#mkfs.vfat -F32 /dev/sd**
 #mfks.*
 
+#mount root and boot
+
 # install base
-pacstrap /mnt base base-devel
+pacstrap /mnt base base-devel gummiboot
 
 # mount 
-arch-chroot
+arch-chroot /mnt
 
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
 
 # locale stuff
-vi /etc/locale.gen
+echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+echo en_US.ISO-8859-1 >> /etc/locale.gen
+echo ko_KR.EUC-KR EUC-KR >> /etc/locale.gen
+echo ko_KR.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
 
 # create locale.conf
@@ -36,11 +41,7 @@ mkinitcpio -p linux
 # edit settings
 vi /etc/fstab
 
-# set passwd
-passwd
-
 # set bootloader
-pacman -S gummiboot
 gummiboot install
 # it will probably fail to create the entry
 # manually create entry in /boot/loader/entries/arch.conf
@@ -51,64 +52,16 @@ gummiboot install
 # initrd  /initramfs-linux.img
 # options root=/dev/sd## rw
 
+# set passwd
+passwd
+
 # wifi stuff
 pacman -S iw wpa_supplicant dialog
 
 # user stuff
 pacman -S sudo
+visudo
 
 # make user
-useradd -m -g users -s /bin/bash $USER
-usermod -aG wheel $USER
+useradd -m -g users -G wheel,adm,systemd-journal -s /bin/bash $USER
 passwd $USER
-
-# --- Break ---
-
-# set good pacman mirror
-pacman -S reflector
-reflector -p http -c 'United States' --threads 4 -a 12 -f 5 -l 15 -n 20 --sort rate --save /etc/pacman.d/mirrorlist
-
-# LAPTOP touchpad
-pacman -S xf86-input-synaptics
-
-# audio
-pacman -S pulseaudio alsa-utils pulseaudio-alsa
-
-# INTEL video
-pacman -S xf86-video-intel
-
-# X
-pacman -S xorg-server xorg-xinit xorg-xsetroot
-
-# Fonts
-pacman -S ttf-dejavu terminus-font ttf-symbola ttf-indixc-otf
-pacman -S gnome-icon-theme lxappearance gnome-themes-standard
-
-# weird font error
-cd /usr/share/fonts/local;mkfontdir
-
-# useful
-pacmans -S pkgfile vim tmux weechat htop dmenu 
-
-# AUR
-curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
-makepkg -si
-cower -dd pacaur
-
-# dotfiles
-git clone https://github.com/hspasta/dotfiles.git
-
-# vim
-git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-vim +BundleInstall +qall
-mkdir /home/$USER/.vim/{backup,swap}
-
-# bspwm/wm stuff
-pacaur -y bspwm-git sxhkd-git termite-git dunst-git compton-git otf-source-code-pro xtitle-git sutils-git
-git clone https://github.com/LemonBoy/bar
-
-# chromium stuff
-pacaur -y chromium-libpdf chromium-pepper-flash
-
-# perf
-mkdir /H.compose-cache

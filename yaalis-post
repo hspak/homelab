@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Pretty fonts
+echo \[infinality-bundle\] >> /etc/pacman.conf
+echo Server = http://ibn.net63.net/infinality-bundle/$arch >> /etc/pacman.conf
+pacman-key -r 962DDE58
+pacman-key --lsign-key 962DDE58
+pacman -Syy
+pacman -S freetype2-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate
+
+# LAPTOP touchpad
+pacman -S xf86-input-synaptics
+
+# audio
+pacman -S pulseaudio alsa-utils pulseaudio-alsa
+
+# Intel video
+pacman -S xf86-video-intel mesa mesa-libgl
+
+# Nvidia video
+pacman -S nvidia libvdpau
+
+# X
+pacman -S xorg-server xorg-xinit xorg-xsetroot
+
+# Fonts
+pacman -S ttf-dejavu terminus-font ttf-symbola ttf-indixc-otf
+pacman -S gnome-icon-theme elementary-icon-theme lxappearance gnome-themes-standard
+
+# weird font error
+cd /usr/share/fonts/local;mkfontdir
+
+# useful
+pacman -S git pkgfile vim tmux weechat htop zsh expac feh ranger ruby python python2 nodejs
+
+# wm
+pacman -S i3 dmenu chromium nautilus
+
+# AUR
+curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
+makepkg -si
+cower -d pacaur
