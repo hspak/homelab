@@ -2,7 +2,7 @@
 
 # Pretty fonts
 echo \[infinality-bundle\] >> /etc/pacman.conf
-echo Server = http://ibn.net63.net/infinality-bundle/$arch >> /etc/pacman.conf
+echo Server = http://ibn.net63.net/infinality-bundle/\$arch >> /etc/pacman.conf
 pacman-key -r 962DDE58
 pacman-key --lsign-key 962DDE58
 pacman -Syy
