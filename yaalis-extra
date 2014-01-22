@@ -22,6 +22,6 @@ vim +BundleInstall +qall
 mkdir $HOME/.vim/{backup,swap}
 
 # system
-echo tmpfs       /home/hsp/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=766 0 0 >> /etc/fstab
-echo tmpfs       /home/hsp/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=766 0 0 >> /etc/fstab
+echo tmpfs       /home/hsp/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       /home/hsp/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
 echo tmpfs       /home/hsp/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
