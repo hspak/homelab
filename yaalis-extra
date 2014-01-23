@@ -2,10 +2,10 @@
 
 # AUR
 curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
-makepkg -si
+makepkg -sic
 cower -d pacaur
 cd pacaur
-makepkg -si
+makepkg -sic
 
 # extra
 pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash termite-git
@@ -22,6 +22,6 @@ vim +BundleInstall +qall
 mkdir $HOME/.vim/{backup,swap}
 
 # system
-echo tmpfs       /home/hsp/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       /home/hsp/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       /home/hsp/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       $HOME/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       $HOME/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       $HOME/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
