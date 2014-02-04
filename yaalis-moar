@@ -5,4 +5,4 @@ sudo pacman -S python-dbus
 sudo pip install notify2
 
 # useful nodejs things I like
-sudo npm -g install bower grunt-cli jshint
+sudo npm -g install yo generator-angular jshint
