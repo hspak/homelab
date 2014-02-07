@@ -8,7 +8,7 @@ cd pacaur
 makepkg -sic
 
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev chromium-libpdf chromium-pepper-flash termite-git
+pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev firefox-nightly termite-git ponymix-git
 
 # dotfiles
 cd
@@ -21,7 +21,9 @@ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
 mkdir $HOME/.vim/{backup,swap}
 
-# system
-echo tmpfs       $HOME/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       $HOME/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       $HOME/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+# mpd
+mkdir $HOME/.config/mpd
+cp /usr/share/doc/mpd/mpdconf.example ~/.config/mpd/mpd.conf
+mkdir ~/.config/mpd/playlists
+touch ~/.config/mpd/{database,log,pid,state,sticker.sql}
+

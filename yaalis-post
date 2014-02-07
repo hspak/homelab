@@ -41,13 +41,13 @@ pacman -S gnome-icon-theme elementary-icon-theme lxappearance gnome-themes-stand
 cd /usr/share/fonts/local;mkfontdir
 
 # useful
-pacman -S tmux weechat htop zsh ranger gdisk dosfstools ntfs-3g bzr libgnomeui 
+pacman -S tmux weechat htop zsh zsh-completions ranger gdisk dosfstools ntfs-3g bzr libgnomeui 
 
 # arch
 pacman -S pkgfile expac abs 
 
 # media
-pacman -S mpv feh 
+pacman -S mpv feh mpd ncmpcpp mpc livestreamer
 
 # devel
 pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip
@@ -56,5 +56,9 @@ pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-
 chsh hsp
 
 # wm
-pacman -S i3 dmenu chromium nautilus wmname
+pacman -S i3 dmenu chromium nautilus wmname libnotify dunst 
 
+# system
+echo tmpfs       $HOME/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       $HOME/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       $HOME/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
