@@ -23,9 +23,7 @@ arch-chroot /mnt
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
 
 # locale stuff
-echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
 echo en_US.ISO-8859-1 >> /etc/locale.gen
-echo ko_KR.EUC-KR EUC-KR >> /etc/locale.gen
 echo ko_KR.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
 

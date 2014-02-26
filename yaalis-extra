@@ -7,8 +7,14 @@ cower -d pacaur
 cd pacaur
 makepkg -sic
 
+# bspwm
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu-xft-transparency numix-circle-icon-theme-git
+
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev firefox-nightly termite-git ponymix-git
+pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev termite-git ponymix-git 
+
+# Korean fonts
+pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
 
 # dotfiles
 cd
