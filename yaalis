@@ -1,9 +1,10 @@
 #!/bin/bash
 
-USER=hsp
 
 # disk stuff
-gdisk
+lsblk
+DRIVE=read -p "which drive to gdisk? (/dev/sd*)"
+gdisk $DRIVE
 
 # efi code = ef00
 # efi partition size = 512M
@@ -15,7 +16,7 @@ gdisk
 #mount root and boot
 
 # install base
-pacstrap /mnt base base-devel gummiboot git
+pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant dialog
 
 # mount 
 arch-chroot /mnt
@@ -42,24 +43,16 @@ vi /etc/fstab
 # set bootloader
 gummiboot install
 # it will probably fail to create the entry
-# manually create entry in /boot/loader/entries/arch.conf
 # Ex:
-#
-# title   Arch Linux
-# linux   /vmlinuz-linux
-# initrd  /initramfs-linux.img
-# options root=/dev/sd## rw
+touch /boot/loader/entries/arch.conf
+echo title   Arch Linux >> /boot/loader/entries/arch.conf
+echo linux   /vmlinuz-linux >> /boot/loader/entries/arch.conf
+echo initrd  /initramfs-linux.img >> /boot/loader/entries/arch.conf
+echo options root=/dev/sd## rw >> /boot/loader/entries/arch.conf
 
 # set passwd
 passwd
 
-# wifi stuff
-pacman -S iw wpa_supplicant dialog
+echo "You're done! reboot into disk. (systemctl reboot)"
 
-# user stuff
-pacman -S sudo
-visudo
 
-# make user
-useradd -m -g users -G wheel,adm,systemd-journal -s /bin/bash $USER
-passwd $USER

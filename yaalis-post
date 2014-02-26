@@ -1,5 +1,15 @@
 #!/bin/bash
 
+USER=hsp
+
+# user stuff
+pacman -S sudo
+visudo
+
+# make user
+useradd -m -g users -G wheel,adm,systemd-journal -s /bin/bash $USER
+passwd $USER 
+
 # Pretty fonts
 echo \[infinality-bundle\] >> /etc/pacman.conf
 echo Server = http://ibn.net63.net/infinality-bundle/\$arch >> /etc/pacman.conf
