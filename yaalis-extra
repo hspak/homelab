@@ -8,7 +8,7 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu-xft-transparency numix-circle-icon-theme-git
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git
 
 # extra
 pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev termite-git ponymix-git 
