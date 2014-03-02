@@ -29,6 +29,9 @@ mount $BOOT_DRIVE /mnt/boot
 # install base
 pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant dialog
 
+# genfstab
+genfstab -p /mnt >> /mnt/etc/fstab
+
 # mount 
 arch-chroot /mnt
 
@@ -43,6 +46,9 @@ locale-gen
 echo LANG="en_US.UTF-8" > /etc/locale.conf
 echo LC_COLLATE="C" >> /etc/locale.conf
 echo LC_TIME="en_US.UTF-8" >> /etc/locale.conf
+
+# set hostname
+echo $HOSTNAME > /etc/hostname
 
 # edit mkinitcpio
 vi /etc/mkinitcpio.conf
