@@ -48,6 +48,7 @@ echo LC_COLLATE="C" >> /etc/locale.conf
 echo LC_TIME="en_US.UTF-8" >> /etc/locale.conf
 
 # set hostname
+HOSTNAME=read -p "enter hostname: "
 echo $HOSTNAME > /etc/hostname
 
 # edit mkinitcpio
