@@ -27,7 +27,7 @@ mount $ROOT_DRIVE /mnt
 mount $BOOT_DRIVE /mnt/boot
 
 # install base
-pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant dialog
+pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant wpa_actiond dialog
 
 # genfstab
 genfstab -p /mnt >> /mnt/etc/fstab
@@ -69,7 +69,7 @@ else
   echo title   Arch Linux >> /boot/loader/entries/arch.conf
   echo linux   /vmlinuz-linux >> /boot/loader/entries/arch.conf
   echo initrd  /initramfs-linux.img >> /boot/loader/entries/arch.conf
-  echo options root=/dev/sd## rw >> /boot/loader/entries/arch.conf
+  echo options root=$ROOT_DRIVE rw >> /boot/loader/entries/arch.conf
 fi
 
 # set root passwd

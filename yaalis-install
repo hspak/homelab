@@ -38,8 +38,8 @@ pacman -S nvidia libvdpau libva-vdpau-driver
 pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop
 
 # Fonts
-pacman -S ttf-dejavu ttf-symbola ttf-indixc-otf terminus-font
-pacman -S gnome-icon-theme elementary-icon-theme lxappearance gnome-themes-standard numix-themes
+pacman -S ttf-dejavu ttf-symbola ttf-indixc-otf terminus-font gnome-font-viewer xorg-xfontsel
+pacman -S gnome-icon-theme lxappearance gnome-themes-standard numix-themes
 
 # weird font error
 cd /usr/share/fonts/local;mkfontdir
@@ -60,9 +60,9 @@ pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-
 chsh $USER
 
 # wm
-pacman -S chromium nautilus wmname libnotify rxvt-unicode urxvt-perls
+pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify rxvt-unicode urxvt-perls transmission-cli
 
 # system
-echo tmpfs       $HOME/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       $HOME/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs       $HOME/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       /home/$USER/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       /home/$USER/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs       /home/$USER/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab

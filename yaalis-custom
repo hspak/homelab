@@ -13,10 +13,10 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod
 
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev ponymix-git 
+pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git
 
 # Korean fonts
 pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
@@ -28,9 +28,9 @@ cd dotfiles
 ./deploy
 
 # vim
+mkdir $HOME/.vim/{backup,swap}
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
-mkdir $HOME/.vim/{backup,swap}
 
 # mpd
 mkdir $HOME/.config/mpd
