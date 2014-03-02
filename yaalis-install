@@ -1,9 +1,13 @@
 #!/bin/bash
 
+if [[ $EUID != 0 ]]; then
+  echo "only root should run this script"
+  exit 1
+fi
+
 USER=hsp
 
-# user stuff
-pacman -S sudo
+# enable wheel sudo access
 visudo
 
 # make user
@@ -53,10 +57,10 @@ pacman -S mpv feh mpd ncmpcpp mpc livestreamer
 pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip
 
 # change bash to zsh
-chsh hsp
+chsh $USER
 
 # wm
-pacman -S i3 chromium nautilus wmname libnotify rxvt-unicode urxvt-perls
+pacman -S chromium nautilus wmname libnotify rxvt-unicode urxvt-perls
 
 # system
 echo tmpfs       $HOME/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab

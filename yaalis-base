@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Only meant for GPT/UEFI systems
+
+if [[ $EUID != 0 ]]; then
+  echo "only root should run this script"
+  exit 1
+fi
 
 # disk stuff
 lsblk
@@ -10,10 +16,15 @@ gdisk $DRIVE
 # efi partition size = 512M
 # efi mount to /boot
 
-#mkfs.vfat -F32 /dev/sd**
-#mfks.*
-
 #mount root and boot
+ROOT_DRIVE=read -p "enter root drive (/dev/sd*#): "
+BOOT_DRIVE=read -p "enter boot drive (/dev/sd*#): "
+
+mkfs.vfat -F32 $BOOT_DRIVE
+mkfs.ext4 $ROOT_DRIVE
+
+mount $ROOT_DRIVE /mnt
+mount $BOOT_DRIVE /mnt/boot
 
 # install base
 pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant dialog
@@ -24,7 +35,7 @@ arch-chroot /mnt
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
 
 # locale stuff
-echo en_US.ISO-8859-1 >> /etc/locale.gen
+echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
 echo ko_KR.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
 
@@ -42,17 +53,19 @@ vi /etc/fstab
 
 # set bootloader
 gummiboot install
-# it will probably fail to create the entry
-# Ex:
-touch /boot/loader/entries/arch.conf
-echo title   Arch Linux >> /boot/loader/entries/arch.conf
-echo linux   /vmlinuz-linux >> /boot/loader/entries/arch.conf
-echo initrd  /initramfs-linux.img >> /boot/loader/entries/arch.conf
-echo options root=/dev/sd## rw >> /boot/loader/entries/arch.conf
 
-# set passwd
+# it will probably fail to create the entry
+if [[ "$(ls -A "$target")" ]]; then
+  echo "looks like entry was created"
+else
+  touch /boot/loader/entries/arch.conf
+  echo title   Arch Linux >> /boot/loader/entries/arch.conf
+  echo linux   /vmlinuz-linux >> /boot/loader/entries/arch.conf
+  echo initrd  /initramfs-linux.img >> /boot/loader/entries/arch.conf
+  echo options root=/dev/sd## rw >> /boot/loader/entries/arch.conf
+fi
+
+# set root passwd
 passwd
 
 echo "You're done! reboot into disk. (systemctl reboot)"
-
-

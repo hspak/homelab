@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ $EUID == 0 ]]; then
+  echo "root should NOT run this script"
+  exit 1
+fi
+
 # AUR
 curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
 makepkg -sic
@@ -11,7 +16,7 @@ makepkg -sic
 pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git
 
 # extra
-pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev termite-git ponymix-git 
+pacaur -y dunst-git compton-git gtk-theme-elementary-bzr source-code-pro-fonts sublime-text-dev ponymix-git 
 
 # Korean fonts
 pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
@@ -33,3 +38,9 @@ cp /usr/share/doc/mpd/mpdconf.example ~/.config/mpd/mpd.conf
 mkdir ~/.config/mpd/playlists
 touch ~/.config/mpd/{database,log,pid,state,sticker.sql}
 
+# need it for my notification scripts
+sudo pacman -S python-dbus
+sudo pip install notify2
+
+# useful nodejs things I like
+sudo npm -g install yo generator-angular jshint grunt-cli bower
