@@ -54,7 +54,7 @@ pacman -S pkgfile expac abs
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer
 
 # devel
-pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip
+pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit
 
 # change bash to zsh
 chsh $USER
