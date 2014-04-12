@@ -17,10 +17,14 @@ passwd $USER
 # Pretty fonts
 echo \[infinality-bundle\] >> /etc/pacman.conf
 echo Server = http://bohoomil.com/repo/\$arch >> /etc/pacman.conf
+echo \[infinality-bundle-fonts\] >> /etc/pacmn.conf
+echo Server = http://bohoomil.com/repo/fonts >> /etc/pacman.conf
+
 pacman-key -r 962DDE58
 pacman-key --lsign-key 962DDE58
 pacman -Syy
-pacman -S freetype2-infinality-ultimate fontconfig-infinality-ultimate cairo-infinality-ultimate
+pacman -S infinality-bundle
+pacman -S ibfonts-meta-base ibfonts-meta-extended ibfonts-nanum-fonts-ib ibfonts-nanumgothic-coding-ibx
 
 # LAPTOP touchpad
 pacman -S xf86-input-synaptics
@@ -35,10 +39,10 @@ pacman -S xf86-video-intel mesa mesa-libgl libva-intel-driver
 pacman -S nvidia libvdpau libva-vdpau-driver
 
 # X
-pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop
+pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop arandr
 
 # Fonts
-pacman -S ttf-dejavu ttf-symbola ttf-indixc-otf terminus-font gnome-font-viewer xorg-xfontsel
+pacman -S ttf-dejavu ttf-symbola ttf-indixc-otf gnome-font-viewer xorg-xfontsel
 pacman -S gnome-icon-theme lxappearance gnome-themes-standard numix-themes
 
 # weird font error
@@ -54,13 +58,13 @@ pacman -S pkgfile expac abs
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer
 
 # devel
-pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit
+pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit julia valgrind gdb svn
 
 # change bash to zsh
 chsh $USER
 
 # wm
-pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify rxvt-unicode urxvt-perls transmission-cli
+pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify transmission-cli
 
 # system
 echo tmpfs       /home/$USER/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab

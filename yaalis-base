@@ -18,13 +18,17 @@ gdisk $DRIVE
 
 #mount root and boot
 ROOT_DRIVE=read -p "enter root drive (/dev/sd*#): "
-BOOT_DRIVE=read -p "enter boot drive (/dev/sd*#): "
-
-mkfs.vfat -F32 $BOOT_DRIVE
 mkfs.ext4 $ROOT_DRIVE
-
 mount $ROOT_DRIVE /mnt
-mount $BOOT_DRIVE /mnt/boot
+
+# boot drive is optional
+BOOT_DRIVE=read -p "enter boot drive (/dev/sd*#): "
+if [[ "$BOOT_DRIVE" == "no" ]]; then
+  echo skipping boot drive creation
+else
+  mkfs.vfat -F32 $BOOT_DRIVE
+  mount $BOOT_DRIVE /mnt/boot
+fi
 
 # install base
 pacstrap /mnt base base-devel gummiboot git iw wpa_supplicant wpa_actiond dialog
@@ -36,6 +40,7 @@ genfstab -p /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
+ln -s /usr/share/zoneinfo/America/Indianapolis /etc/localtime
 
 # locale stuff
 echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
@@ -69,7 +74,7 @@ else
   echo title   Arch Linux >> /boot/loader/entries/arch.conf
   echo linux   /vmlinuz-linux >> /boot/loader/entries/arch.conf
   echo initrd  /initramfs-linux.img >> /boot/loader/entries/arch.conf
-  echo options root=$ROOT_DRIVE rw >> /boot/loader/entries/arch.conf
+  echo options root=$ROOT_DRIVE rw quiet >> /boot/loader/entries/arch.conf
 fi
 
 # set root passwd

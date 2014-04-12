@@ -13,13 +13,13 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod dzen2-git
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod dzen2-git sres-git
 
 # extra
 pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git
 
 # Korean fonts
-pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
+# pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
 
 # dotfiles
 cd
@@ -38,9 +38,5 @@ cp /usr/share/doc/mpd/mpdconf.example ~/.config/mpd/mpd.conf
 mkdir ~/.config/mpd/playlists
 touch ~/.config/mpd/{database,log,pid,state,sticker.sql}
 
-# need it for my notification scripts
-sudo pacman -S python-dbus
-sudo pip install notify2
-
 # useful nodejs things I like
-sudo npm -g install yo generator-angular jshint grunt-cli bower
+# sudo npm -g install yo generator-angular jshint grunt-cli bower
