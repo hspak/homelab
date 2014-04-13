@@ -13,7 +13,7 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod dzen2-git sres-git
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod dzen2-git sres-git txtw-git
 
 # extra
 pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git
@@ -33,9 +33,9 @@ git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
 
 # mpd
-mkdir $HOME/.config/mpd
+mkdir -p $HOME/.config/mpd
 cp /usr/share/doc/mpd/mpdconf.example ~/.config/mpd/mpd.conf
-mkdir ~/.config/mpd/playlists
+mkdir -p ~/.config/mpd/playlists
 touch ~/.config/mpd/{database,log,pid,state,sticker.sql}
 
 # useful nodejs things I like
