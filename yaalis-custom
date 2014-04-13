@@ -13,10 +13,13 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git tamsynmod dzen2-git sres-git txtw-git
+pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git dzen2-git sres-git txtw-git
 
 # extra
-pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git
+pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git chromium-pepper-flash chromium-libpdf
+
+# java and stuff
+pacaur -y jdk andoird-udev 
 
 # Korean fonts
 # pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core

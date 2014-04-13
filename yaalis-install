@@ -70,3 +70,5 @@ pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify transmission-c
 echo tmpfs       /home/$USER/.cache          tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
 echo tmpfs       /home/$USER/.compose-cache  tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
 echo tmpfs       /home/$USER/downloads       tmpfs       uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+
+echo noarp >> /etc/dhcpcd.conf
