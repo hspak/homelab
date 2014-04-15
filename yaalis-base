@@ -19,15 +19,15 @@ echo "which drive to gdisk? (/dev/sd*)"
 read DRIVE
 gdisk $DRIVE
 
-# efi code = ef00
-# efi partition size = 512M
-# efi mount to /boot
-
-#mount root and boot
+#mount root
 echo "enter root drive (/dev/sd*#): "
 read ROOT_DRIVE
 mkfs.ext4 $ROOT_DRIVE
 mount $ROOT_DRIVE "$MNT"
+
+# efi code = ef00
+# efi partition size = 512M
+# efi mount to /boot
 
 # boot drive is optional
 echo "enter boot drive (/dev/sd*#) (or 'no'): "

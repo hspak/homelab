@@ -36,7 +36,7 @@ pacman -S pulseaudio alsa-utils pulseaudio-alsa pavucontrol
 pacman -S xf86-video-intel mesa mesa-libgl libva-intel-driver
 
 # Nvidia video
-pacman -S nvidia libvdpau libva-vdpau-driver
+pacman -S nvidia libvdpau libva-vdpau-driver nvidia-utils
 
 # X
 pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop arandr
@@ -52,7 +52,7 @@ cd /usr/share/fonts/local;mkfontdir
 pacman -S tmux weechat htop zsh-completions ranger gdisk dosfstools ntfs-3g bzr libgnomeui acpi lm_sensors qt iotop powertop avahi
 
 # arch
-pacman -S pkgfile expac abs ccache
+pacman -S pkgfile expac abs ccache burp
 
 # media
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer libreoffice-common libreoffice-writer libreoffice-gnome libreoffice-en-US
