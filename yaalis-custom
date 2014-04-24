@@ -8,7 +8,7 @@ if [[ $EUID == 0 ]]; then
 fi
 
 # AUR
-cd
+cd /tmp
 curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > PKGBUILD
 makepkg -sic
 cower -d pacaur
@@ -24,8 +24,8 @@ pacaur -y dunst-git compton-git source-code-pro-fonts ponymix-git chromium-peppe
 # java and stuff
 pacaur -y jdk andoird-udev 
 
-# Korean fonts
-# pacaur -y ttf-alee ttf-nanum ttf-nanumgothic_coding ttf-unfonts-core
+# laptop
+pacaur -y simpfand-git
 
 # dotfiles
 cd
@@ -37,6 +37,8 @@ cd dotfiles
 mkdir $HOME/.vim/{backup,swap}
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 vim +BundleInstall +qall
+cd $HOME/.vim/bundle/tern_for_vim
+npm install
 
 # mpd
 # mkdir -p $HOME/.config/mpd
