@@ -14,7 +14,7 @@ visudo
 
 # make user
 useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $USER
-passwd $USER 
+passwd $USER
 
 # Pretty fonts
 echo \[infinality-bundle\] >> /etc/pacman.conf
@@ -44,7 +44,7 @@ pacman -S nvidia libvdpau libva-vdpau-driver nvidia-utils
 pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop arandr
 
 # Fonts
-pacman -S tttf-symbola ttf-indic-otf gnome-font-viewer xorg-xfontsel
+pacman -S ttf-symbola ttf-indic-otf gnome-font-viewer xorg-xfontsel
 pacman -S gnome-icon-theme lxappearance gnome-themes-standard numix-themes
 
 # weird font error
@@ -60,7 +60,7 @@ pacman -S pkgfile expac abs ccache burp
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer libreoffice-common libreoffice-writer libreoffice-gnome libreoffice-en-US
 
 # devel
-pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit julia valgrind gdb svn clang
+pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit julia valgrind gdb svn clang dnsutils traceroute
 
 # wm
 pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify transmission-cli
