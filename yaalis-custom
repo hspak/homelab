@@ -22,7 +22,7 @@ pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-the
 pacaur -y dunst-git compton-git ponymix-git chromium-pepper-flash chromium-libpdf termite-git
 
 # java and stuff
-pacaur -y jdk andoird-udev 
+pacaur -y jdk android-udev
 
 # laptop
 pacaur -y simpfand-git

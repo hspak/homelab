@@ -41,12 +41,12 @@ else
 fi
 
 # install base
-pacstrap "$MNT" base base-devel gummiboot git iw wpa_supplicant wpa_actiond dialog zsh
+pacstrap "$MNT" base base-devel gummiboot git iw wpa_supplicant wpa_actiond dialog zsh xterm
 
 # genfstab
 genfstab -p "$MNT" >> "$MNT"/etc/fstab
 
-# mount 
+# mount
 # arch-chroot "$MNT"
 
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
