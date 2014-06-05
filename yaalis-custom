@@ -16,7 +16,11 @@ cd pacaur
 makepkg -sic
 
 # bspwm
-pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git dzen2-git sres-git txtw-git
+# pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git txtw-git sres-git
+pacaur -y dmenu2 numix-circle-icon-theme-git dzen2-git otf-powerline-symbols-git
+
+# i3
+pa -y i3-git
 
 # extra
 pacaur -y dunst-git compton-git ponymix-git chromium-pepper-flash chromium-libpdf termite-git
