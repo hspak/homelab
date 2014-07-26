@@ -20,7 +20,7 @@ makepkg -sic
 pacaur -y dmenu2 numix-circle-icon-theme-git dzen2-git otf-powerline-symbols-git
 
 # i3
-pa -y i3-git
+pa -y i3-git i3pystatus-git
 
 # extra
 pacaur -y dunst-git compton-git ponymix-git chromium-pepper-flash chromium-libpdf termite-git

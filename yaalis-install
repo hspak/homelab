@@ -26,7 +26,7 @@ pacman-key -r 962DDE58
 pacman-key --lsign-key 962DDE58
 pacman -Syy
 pacman -S infinality-bundle
-pacman -S ibfonts-meta-base ibfonts-meta-extended ttf-nanum-fonts-ib ttf-nanumgothic-coding-ibx ttf-source-code-pro-ibx
+pacman -S ibfonts-meta-base ibfonts-meta-extended ttf-source-code-pro-ibx
 
 # LAPTOP touchpad
 pacman -S xf86-input-synaptics
@@ -57,7 +57,7 @@ pacman -S pkgfile expac abs burp pkgbuild-introspection-git
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer libreoffice-common libreoffice-writer libreoffice-gnome libreoffice-en-US
 
 # devel
-pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit julia valgrind gdb svn clang dnsutils traceroute
+pacman -S vim git ruby python python2 nodejs openssh mongodb python-pip python2-pip lua luajit julia valgrind gdb svn clang dnsutils traceroute go
 
 # wm
 pacman -S chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify transmission-cli
