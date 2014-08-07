@@ -26,7 +26,7 @@ pacman-key -r 962DDE58
 pacman-key --lsign-key 962DDE58
 pacman -Syy
 pacman -S infinality-bundle
-pacman -S ibfonts-meta-base ibfonts-meta-extended ttf-nanum-fonts-ib ttf-nanumgothic-coding-ibx ttf-source-code-pro-ibx
+pacman -S ibfonts-meta-base ibfonts-meta-extended ttf-source-code-pro-ibx
 
 # LAPTOP touchpad
 pacman -S xf86-input-synaptics
@@ -51,7 +51,7 @@ pacman -S gnome-icon-theme lxappearance gnome-themes-standard numix-themes
 pacman -S tmux weechat htop zsh-completions ranger gdisk dosfstools ntfs-3g bzr libgnomeui acpi lm_sensors qt iotop powertop avahi
 
 # arch
-pacman -S pkgfile expac abs burp
+pacman -S pkgfile expac abs burp pkgbuild-introspection-git
 
 # media
 pacman -S mpv feh mpd ncmpcpp mpc livestreamer libreoffice-common libreoffice-writer libreoffice-gnome libreoffice-en-US
