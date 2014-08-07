@@ -15,6 +15,9 @@ cower -d pacaur
 cd pacaur
 makepkg -sic
 
+# arch
+pacaur -y pkgbuild-introspection-git
+
 # bspwm
 pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git dmenu2 numix-circle-icon-theme-git dzen2-git sres-git txtw-git
 
