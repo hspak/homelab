@@ -10,69 +10,63 @@ arch_chroot() {
 }
 
 if [[ $EUID != 0 ]]; then
-  echo "only root should run this script"
+  printf "only root should run this script\n"
   exit 1
 fi
 
-# disk stuff
+# ------ disk stuff ------
+read -ep "Which drive to gdisk? (/dev/sd[a-z]): " drive
+read -ep "Root partition? (/dev/sd[a-z][1-9]): " root_part
+read -ep "Boot partition? (/dev/sd[a-z][1-9]): " boot_part
+read -ep "New boot partition? (y/n): " boot_new
+
 lsblk
-echo "which drive to gdisk? (/dev/sd*)"
-read DRIVE
-gdisk $DRIVE
+cat << EOF
 
-#mount root
-echo "enter root drive (/dev/sd*#): "
-read ROOT_DRIVE
-mkfs.ext4 $ROOT_DRIVE
-mount $ROOT_DRIVE "$MNT"
+Boot drive:
+  efi code = ef00
+  efi partition size = 512M (or smaller)
+  efi mount to /boot
 
-# efi code = ef00
-# efi partition size = 512M
-# efi mount to /boot
+EOF
 
-# boot drive is optional (from preexisting installs)
-echo "enter boot drive (/dev/sd*#) (or 'no'): "
-read BOOT_DRIVE
-if [[ "$BOOT_DRIVE" == "no" ]]; then
-  echo "skipping boot drive creation"
-else
-  mkfs.vfat -F32 $BOOT_DRIVE
-  mount $BOOT_DRIVE "$MNT"/boot
+gdisk "$drive"
+mkfs.ext4 "$root_part"
+mount "$root_part" "$MNT"
+mkdir "$MNT"/boot
+[[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
+mount "$boot_part" "$MNT"/boot
+
+# ------ installation ------
+read -ep "Enter hostname: " hostname
+read -ep "Need wifi (y/n): " wifi
+
+pacstrap "$MNT" base
+arch_chroot "pacman -Syu base-devel gummiboot git"
+
+if [[ "$wifi" == "y" ]]; then
+  arch_chroot "pacman -Syu iw wpa_supplicant wpa_actiond dialog"
 fi
 
-# install base
-# pacstrap "$MNT" base base-devel gummiboot git iw wpa_supplicant wpa_actiond dialog zsh xterm
-pacstrap "$MNT" base base-devel gummiboot git zsh xterm
-
-# genfstab
+# create fstab
 genfstab -p "$MNT" >> "$MNT"/etc/fstab
-
-# mount
-# arch-chroot "$MNT"
 
 # symlink from /usr/share/zoneinfo/* to /etc/localtime
 ln -s "$MNT"/usr/share/zoneinfo/America/Indianapolis "$MNT"/etc/localtime
-
-# locale stuff
-echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
-arch_chroot "locale-gen"
 
 # create locale.conf
 echo LANG="en_US.UTF-8" > "$MNT"/etc/locale.conf
 echo LC_COLLATE="C" >> "$MNT"/etc/locale.conf
 echo LC_TIME="en_US.UTF-8" >> "$MNT"/etc/locale.conf
 
+# locale stuff
+echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
+arch_chroot "locale-gen"
+
 # set hostname
-echo "enter hostname: "
-read HOSTNAME
-echo $HOSTNAME > "$MNT"/etc/hostname
+echo "$hostname" > "$MNT"/etc/hostname
 
 # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
-if [[ "$BOOT_DRIVE" == "no" ]]; then
-  echo "enter boot drive (/dev/sd*#) (t): "
-  read BOOT_DRIVE
-  mount $BOOT_DRIVE "$MNT"/boot
-fi
 vi "$MNT"/etc/mkinitcpio.conf
 arch_chroot "mkinitcpio -p linux"
 
@@ -83,7 +77,7 @@ vi "$MNT"/etc/fstab
 arch_chroot "gummiboot install"
 
 # it will probably fail to create the entry
-if [[ "$(ls -A "$target")" ]]; then
+if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
   echo "looks like entry was created"
 else
   touch "$MNT"/boot/loader/entries/arch.conf
