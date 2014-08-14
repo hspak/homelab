@@ -9,40 +9,59 @@ arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
 }
 
+show_help() {
+  cat << EOF
+
+Boot drive (efi):
+  efi code = ef00
+  efi partition size = 512M (or smaller)
+  efi mount to /boot
+
+Boot drive (bios):
+  code = ef02
+  partition size = 1024K
+
+EOF
+}
+
 if [[ $EUID != 0 ]]; then
   printf "only root should run this script\n"
   exit 1
 fi
 
 # ------ disk stuff ------
-lsblk
-cat << EOF
-
-Boot drive:
-  efi code = ef00
-  efi partition size = 512M (or smaller)
-  efi mount to /boot
-
-EOF
-
-read -ep "Which drive to gdisk: " drive
+read -ep "Which drive to install root: " drive
+read -ep "Autmated disk partition? (y/n): " auto_gdisk
 read -ep "EFI (y/n): " efi
-gdisk "$drive"
-lsblk
+read -ep "Need wifi (y/n): " wifi
+read -ep "Enter hostname: " hostname
 
-read -ep "Boot partition: " boot_part
-read -ep "Root partition: " root_part
-read -ep "New boot partition? (y/n): " boot_new
+if [[ "$auto_gdisk" == "y" ]]; then
+  lsblk
+  show_help
+  gdisk "$drive"
+  lsblk
+  read -ep "Boot partition: " boot_part
+  read -ep "Root partition: " root_part
+  [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
+else
+  if [[ "$efi" == "y" ]]; then
+    sgdisk -o -n 1:2048:524288 -n 2:526336:$(sgdisk -E $drive) $drive
+    boot_new="y"
+  else
+    sgdisk -o -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) $drive
+  fi
+  boot_part="${drive}1"
+  root_part="${drive}2"
+fi
+
 mkfs.ext4 "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
-[[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
+[[ "$boot_new" == "y" && "$efi" == "y" ]] && mkfs.vfat -F32 $boot_part
 mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
-read -ep "Enter hostname: " hostname
-read -ep "Need wifi (y/n): " wifi
-
 pacstrap "$MNT" base
 arch_chroot "pacman -Syu --noconfirm base-devel git"
 [[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
@@ -85,7 +104,7 @@ if [[ "$efi" == "y" ]]; then
     echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
     echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
     echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
-    echo options root=$ROOT_DRIVE rw quiet >> "$MNT"/boot/loader/entries/arch.conf
+    echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
     printf "Created entry\n"
   fi
 else
