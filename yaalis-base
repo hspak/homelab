@@ -15,11 +15,6 @@ if [[ $EUID != 0 ]]; then
 fi
 
 # ------ disk stuff ------
-read -ep "Which drive to gdisk? (/dev/sd[a-z]): " drive
-read -ep "Root partition? (/dev/sd[a-z][1-9]): " root_part
-read -ep "Boot partition? (/dev/sd[a-z][1-9]): " boot_part
-read -ep "New boot partition? (y/n): " boot_new
-
 lsblk
 cat << EOF
 
@@ -30,7 +25,12 @@ Boot drive:
 
 EOF
 
+read -ep "Which drive to gdisk? (/dev/sd[a-z]): " drive
 gdisk "$drive"
+
+read -ep "Root partition? (/dev/sd[a-z][1-9]): " root_part
+read -ep "Boot partition? (/dev/sd[a-z][1-9]): " boot_part
+read -ep "New boot partition? (y/n): " boot_new
 mkfs.ext4 "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
