@@ -25,34 +25,47 @@ Boot drive:
 
 EOF
 
-read -ep "Which drive to gdisk? (/dev/sd[a-z]): " drive
+read -ep "Which drive to gdisk: " drive
+read -ep "EFI (y/n): " efi
 gdisk "$drive"
 
-read -ep "Root partition? (/dev/sd[a-z][1-9]): " root_part
-read -ep "Boot partition? (/dev/sd[a-z][1-9]): " boot_part
-read -ep "New boot partition? (y/n): " boot_new
-mkfs.ext4 "$root_part"
-mount "$root_part" "$MNT"
-mkdir "$MNT"/boot
-[[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
-mount "$boot_part" "$MNT"/boot
+lsblk
+if [[ "$efi" == "y" ]]; then
+  read -ep "Boot partition: " boot_part
+  read -ep "Root partition: " root_part
+  read -ep "New boot partition? (y/n): " boot_new
+  mkfs.ext4 "$root_part"
+  mount "$root_part" "$MNT"
+  mkdir "$MNT"/boot
+  [[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
+  mount "$boot_part" "$MNT"/boot
+else
+  # only 1 partition for non-efi systems
+  read -ep "Partition: " main_part
+  mkfs.ext4 "$root_part"
+  mount "$root_part" "$MNT"
+fi
 
-# ------ installation ------
+# ------ package installation ------
 read -ep "Enter hostname: " hostname
 read -ep "Need wifi (y/n): " wifi
 
 pacstrap "$MNT" base
-arch_chroot "pacman -Syu base-devel gummiboot git"
+arch_chroot "pacman -Syu --noconfirm base-devel git"
+[[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
 
-if [[ "$wifi" == "y" ]]; then
-  arch_chroot "pacman -Syu iw wpa_supplicant wpa_actiond dialog"
+if [[ "$efi" == "y" ]]: thne
+  arch_chroot "pacman -S --noconfirm gummiboot"
+else
+  arch_chroot "pacman -S --noconfirm syslinux"
 fi
 
+# ------ setting installation ------
 # create fstab
 genfstab -p "$MNT" >> "$MNT"/etc/fstab
 
-# symlink from /usr/share/zoneinfo/* to /etc/localtime
 ln -s "$MNT"/usr/share/zoneinfo/America/Indianapolis "$MNT"/etc/localtime
+printf "Set timezone\n"
 
 # create locale.conf
 echo LANG="en_US.UTF-8" > "$MNT"/etc/locale.conf
@@ -65,7 +78,31 @@ arch_chroot "locale-gen"
 
 # set hostname
 echo "$hostname" > "$MNT"/etc/hostname
+printf "Set hostname\n"
 
+# set bootloader
+if [[ "$efi" == "y" ]]; then
+  arch_chroot "gummiboot install"
+
+  # it will probably fail to create the entry
+  if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
+    echo "looks like entry was created"
+  else
+    touch "$MNT"/boot/loader/entries/arch.conf
+    echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+    echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+    echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+    echo options root=$ROOT_DRIVE rw quiet >> "$MNT"/boot/loader/entries/arch.conf
+    printf "Created entry\n"
+  fi
+else
+  arch_chroot "syslinux-install_update -i -a -m"
+fi
+
+# set root passwd
+arch_chroot "passwd"
+
+# ------ finishing installation ------
 # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
 vi "$MNT"/etc/mkinitcpio.conf
 arch_chroot "mkinitcpio -p linux"
@@ -73,23 +110,11 @@ arch_chroot "mkinitcpio -p linux"
 # edit settings (add discard for ssd)
 vi "$MNT"/etc/fstab
 
-# set bootloader
-arch_chroot "gummiboot install"
-
-# it will probably fail to create the entry
-if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
-  echo "looks like entry was created"
-else
-  touch "$MNT"/boot/loader/entries/arch.conf
-  echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
-  echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-  echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
-  echo options root=$ROOT_DRIVE rw quiet >> "$MNT"/boot/loader/entries/arch.conf
-fi
-
-# set root passwd
-arch_chroot "passwd"
-
 # unmount and finish!
-umount "$MNT/boot" "$MNT"
-echo "You're done! reboot into disk. (systemctl reboot)"
+if [[ "$efi" == "y" ]] && umount "$MNT/boot"
+umount "$MNT"
+cat << EOF
+
+"You're done! reboot into disk. (systemctl reboot)"
+
+EOF
