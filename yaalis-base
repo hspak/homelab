@@ -3,6 +3,11 @@
 # Meant to be run in a LiveCD
 # Only meant for GPT/UEFI systems
 
+# TODO:
+#   - Merge base and install
+#   - Grab packages from a local server
+#   - Error catching?
+
 MNT=/mnt
 
 arch_chroot() {
@@ -32,7 +37,7 @@ fi
 # ------ disk stuff ------
 lsblk
 read -ep "Which drive to install root: " drive
-read -ep "Autmated disk partition? (y/n): " auto_gdisk
+read -ep "Automated disk partition? (y/n): " auto_gdisk
 read -ep "EFI (y/n): " efi
 read -ep "Need wifi (y/n): " wifi
 read -ep "Enter hostname: " hostname
@@ -60,7 +65,7 @@ else
   [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
 fi
 
-mkfs.ext4 "$root_part"
+mkfs.ext4 -F "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
 if [[ "$boot_new" == "y" && "$efi" == "y" ]]; then
