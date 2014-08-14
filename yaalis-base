@@ -59,8 +59,10 @@ fi
 mkfs.ext4 "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
-[[ "$boot_new" == "y" && "$efi" == "y" ]] && mkfs.vfat -F32 $boot_part
-mount "$boot_part" "$MNT"/boot
+if [[ "$boot_new" == "y" && "$efi" == "y" ]]; then
+  mkfs.vfat -F32 $boot_part
+  mount "$boot_part" "$MNT"/boot
+fi
 
 # ------ package installation ------
 pacstrap "$MNT" base
