@@ -57,7 +57,7 @@ arch_chroot "pacman -Syu --noconfirm base-devel git"
 if [[ "$efi" == "y" ]]; then
   arch_chroot "pacman -S --noconfirm gummiboot"
 else
-  arch_chroot "pacman -S --noconfirm syslinux"
+  arch_chroot "pacman -S --noconfirm grub"
 fi
 
 # ------ setting installation ------
@@ -96,7 +96,8 @@ if [[ "$efi" == "y" ]]; then
     printf "Created entry\n"
   fi
 else
-  arch_chroot "syslinux-install_update -i -a -m"
+  arch_chroot "grub-install --target=i386-pc --recheck --debug $main_part"
+  arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
 fi
 
 # set root passwd
@@ -104,6 +105,7 @@ arch_chroot "passwd"
 
 # ------ finishing installation ------
 # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
+# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
 vi "$MNT"/etc/mkinitcpio.conf
 arch_chroot "mkinitcpio -p linux"
 
