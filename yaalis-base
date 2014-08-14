@@ -28,23 +28,16 @@ EOF
 read -ep "Which drive to gdisk: " drive
 read -ep "EFI (y/n): " efi
 gdisk "$drive"
-
 lsblk
-if [[ "$efi" == "y" ]]; then
-  read -ep "Boot partition: " boot_part
-  read -ep "Root partition: " root_part
-  read -ep "New boot partition? (y/n): " boot_new
-  mkfs.ext4 "$root_part"
-  mount "$root_part" "$MNT"
-  mkdir "$MNT"/boot
-  [[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
-  mount "$boot_part" "$MNT"/boot
-else
-  # only 1 partition for non-efi systems
-  read -ep "Partition: " main_part
-  mkfs.ext4 "$main_part"
-  mount "$main_part" "$MNT"
-fi
+
+read -ep "Boot partition: " boot_part
+read -ep "Root partition: " root_part
+read -ep "New boot partition? (y/n): " boot_new
+mkfs.ext4 "$root_part"
+mount "$root_part" "$MNT"
+mkdir "$MNT"/boot
+[[ "$boot_new" == "y" ]] && mkfs.vfat -F32 $boot_part
+mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
 read -ep "Enter hostname: " hostname
@@ -96,7 +89,7 @@ if [[ "$efi" == "y" ]]; then
     printf "Created entry\n"
   fi
 else
-  arch_chroot "grub-install --target=i386-pc --recheck --debug $main_part"
+  arch_chroot "grub-install --target=i386-pc --recheck --debug $boot_part"
   arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
 fi
 
