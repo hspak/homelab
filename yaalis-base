@@ -42,8 +42,8 @@ if [[ "$efi" == "y" ]]; then
 else
   # only 1 partition for non-efi systems
   read -ep "Partition: " main_part
-  mkfs.ext4 "$root_part"
-  mount "$root_part" "$MNT"
+  mkfs.ext4 "$main_part"
+  mount "$main_part" "$MNT"
 fi
 
 # ------ package installation ------
