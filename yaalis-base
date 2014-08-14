@@ -89,7 +89,7 @@ if [[ "$efi" == "y" ]]; then
     printf "Created entry\n"
   fi
 else
-  arch_chroot "grub-install --target=i386-pc --recheck --debug $boot_part"
+  arch_chroot "grub-install --target=i386-pc --recheck --debug $drive"
   arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
 fi
 
