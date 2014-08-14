@@ -54,7 +54,7 @@ pacstrap "$MNT" base
 arch_chroot "pacman -Syu --noconfirm base-devel git"
 [[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
 
-if [[ "$efi" == "y" ]]: then
+if [[ "$efi" == "y" ]]; then
   arch_chroot "pacman -S --noconfirm gummiboot"
 else
   arch_chroot "pacman -S --noconfirm syslinux"
