@@ -72,7 +72,7 @@ if [[ "$auto_gdisk" == "y" ]]; then
     boot_new="y"
   else
     # 1M boot drive for non-efi
-    sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) -t 1:ef02 -t 2:8300$drive
+    sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) -t 1:ef02 -t 2:8300 $drive
   fi
   boot_part="${drive}1"
   root_part="${drive}2"
@@ -147,11 +147,6 @@ else
 fi
 
 # ------ finishing installation ------
-# edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
-# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
-vi "$MNT"/etc/mkinitcpio.conf
-arch_chroot "mkinitcpio -p linux"
-
 # edit settings (add discard for ssd)
 echo tmpfs  /home/$USER/.cache         tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
 echo tmpfs  /home/$USER/.compose-cache tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
@@ -159,6 +154,11 @@ echo tmpfs  /home/$USER/downloads      tmpfs uid=hsp,gid=users,nodev,nosuid,mode
 vi "$MNT"/etc/fstab
 
 vi "$MNT"/etc/makepkg.conf
+
+# edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
+# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
+vi "$MNT"/etc/mkinitcpio.conf
+arch_chroot "mkinitcpio -p linux"
 
 arch_chroot "passwd"
 
