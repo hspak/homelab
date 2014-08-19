@@ -168,6 +168,7 @@ fi
 arch_chroot "passwd"
 
 # ------ user creation ------
+echo "Creating user $username..."
 arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username"
 arch_chroot "passwd $username"
 
@@ -209,7 +210,7 @@ fi
 
 # ------ install, unmount and finish! ------
 arch_chroot "pacman -Syy"
-arch_chroot "pacman -S ${INSTALL_LIST[*]}"
+arch_chroot "pacman --noconfirm -S ${INSTALL_LIST[*]}"
 
 [[ "$efi" == "y" ]] && umount "$MNT/boot"
 umount "$MNT"

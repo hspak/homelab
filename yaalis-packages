@@ -1,20 +1,96 @@
-pack_arch=(expac abs burp)
-pack_audio=(pulseaudio alsa-utils pulseaudio-alsa pavucontrol)
+pack_arch=(expac \
+  abs \
+  burp)
 
-pack_X=(xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xprop arandr)
-pack_themes=(gnome-icon-theme lxappearance gnome-themes-standard numix-themes)
-pack_fonts=(ttf-symbola ttf-indic-otf gnome-font-viewer xorg-xfontsel)
-pack_ib=(infinality-bundle ibfonts-meta-base ibfonts-meta-extended ttf-source-code-pro-ibx)
+pack_audio=(pulseaudio \
+  alsa-utils \
+  pulseaudio-alsa \
+  pavucontrol)
 
-pack_misc=(tmux weechat htop zsh-completions ranger gdisk dosfstools ntfs-3g bzr libgnomeui acpi lm_sensors qt iotop powertop avahi chromium nautilus gvfs gvfs-mtp udisk2 wmname libnotify transmission-cli gdm gnome-keyring)
+pack_X=(xorg-server \
+  xorg-xinit \
+  xorg-xsetroot \
+  xorg-setxkbmap \
+  xorg-xprop \
+  arandr)
 
-pack_devel=(vim ctags git ruby python python2 nodejs rust openssh python-pip python2-pip lua luajit julia valgrind gdb svn clang dnsutils traceroute rust git mercurial)
+pack_themes=(gnome-icon-theme \
+  lxappearance \
+  gnome-themes-standard \
+  numix-themes)
+
+pack_fonts=(ttf-symbola \
+  ttf-indic-otf \
+  gnome-font-viewer \
+  xorg-xfontsel)
+
+pack_ib=(infinality-bundle \
+  ibfonts-meta-base \
+  ibfonts-meta-extended \
+  ttf-source-code-pro-ibx)
+
+pack_misc=(tmux \
+  weechat \
+  htop \
+  zsh-completions \
+  ranger \
+  gdisk \
+  dosfstools \
+  ntfs-3g \
+  bzr \
+  libgnomeui \
+  acpi \
+  lm_sensors \
+  qt \
+  iotop \
+  powertop \
+  avahi \
+  chromium \
+  nautilus \
+  gvfs \
+  gvfs-mtp \
+  udisks2 \
+  wmname \
+  libnotify \
+  transmission-cli \
+  gdm \
+  gnome-keyring)
+
+pack_devel=(vim \
+  ctags \
+  git \
+  ruby \
+  python \
+  python2 \
+  nodejs \
+  rust \
+  openssh \
+  python-pip \
+  python2-pip \
+  lua \
+  luajit \
+  julia \
+  valgrind \
+  gdb \
+  svn \
+  clang \
+  dnsutils \
+  traceroute \
+  rust \
+  git \
+  mercurial)
 
 # installing open source b/c proprietary doesn't
 # have official support from arch
 pack_amd=(xf86-video-ati)
-pack_nvidia=(nvidia libvdpau libva-vdpau-driver nvidia-utils)
-pack_intel=(xf86-video-intel mesa mesa-libgl libva-intel-driver)
+pack_nvidia=(nvidia \
+  libvdpau \
+  libva-vdpau-driver \
+  nvidia-utils)
+pack_intel=(xf86-video-intel \
+  mesa \
+  mesa-libgl \
+  libva-intel-driver)
 pack_laptop=(xf86-input-synaptics)
 
 pack_aur=()
