@@ -148,7 +148,7 @@ else
 fi
 
 # ------ finishing installation ------
-read -ep "edit extra settings? (fstab/makepkg/mkinitcpio) (y/n): " edit
+read -ep "edit extra settings? (fstab/makepkg/mkinitcpio/visudo) (y/n): " edit
 
 # edit settings (add discard for ssd)
 echo tmpfs /home/$username/.cache         tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
@@ -163,13 +163,13 @@ if [[ "$edit" == "y" ]]; then
   vi "$MNT"/etc/mkinitcpio.conf
   arch_chroot "mkinitcpio -p linux"
 
+  arch_chroot "visudo"
   arch_chroot "passwd"
 fi
 
 # ------ user creation ------
-useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username
-passwd $username
-visudo
+arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username"
+arch_chroot "passwd $username"
 
 # ------ install packages ------
 if [[ "$machine" != "s" ]]; then
