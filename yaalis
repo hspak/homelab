@@ -68,11 +68,11 @@ if [[ "$auto_gdisk" == "y" ]]; then
 
   if [[ "$efi" == "y" ]]; then
     # 256M boot drive for efi
-    sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:ef00 -t 2:8300 $drive
+    sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
     boot_new="y"
   else
     # 1M boot drive for non-efi
-    sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) -t 1:ef02 -t 2:8300 $drive
+    sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) -t 1:EF02 -t 2:8300 $drive
   fi
   boot_part="${drive}1"
   root_part="${drive}2"
@@ -86,6 +86,7 @@ else
   [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
 fi
 
+sgdisk -p $drive
 mkfs.ext4 -F "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
@@ -147,36 +148,39 @@ else
 fi
 
 # ------ finishing installation ------
+read -ep "edit extra settings? (fstab/makepkg/mkinitcpio) (y/n): " edit
+
 # edit settings (add discard for ssd)
-echo tmpfs  /home/$USER/.cache         tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs  /home/$USER/.compose-cache tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-echo tmpfs  /home/$USER/downloads      tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
-vi "$MNT"/etc/fstab
+echo tmpfs /home/$username/.cache         tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
+echo tmpfs /home/$username/.compose-cache tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
+echo tmpfs /home/$username/downloads      tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
 
-vi "$MNT"/etc/makepkg.conf
+if [[ "$edit" == "y" ]]; then
+  vi "$MNT"/etc/fstab
+  vi "$MNT"/etc/makepkg.conf
+  # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
+  # edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
+  vi "$MNT"/etc/mkinitcpio.conf
+  arch_chroot "mkinitcpio -p linux"
 
-# edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
-# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
-vi "$MNT"/etc/mkinitcpio.conf
-arch_chroot "mkinitcpio -p linux"
-
-arch_chroot "passwd"
+  arch_chroot "passwd"
+fi
 
 # ------ user creation ------
-useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $USER
-passwd $USER
+useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username
+passwd $username
 visudo
 
 # ------ install packages ------
 if [[ "$machine" != "s" ]]; then
   # Pretty fonts
-  echo \[infinality-bundle\] >> /etc/pacman.conf
-  echo Server = http://bohoomil.com/repo/\$arch >> /etc/pacman.conf
+  echo \[infinality-bundle\] >> $MNT/etc/pacman.conf
+  echo Server = http://bohoomil.com/repo/\$arch >> $MNT/etc/pacman.conf
   echo \[infinality-bundle-fonts\] >> /etc/pacman.conf
-  echo Server = http://bohoomil.com/repo/fonts >> /etc/pacman.conf
+  echo Server = http://bohoomil.com/repo/fonts >> $MNT/etc/pacman.conf
 
-  pacman-key -r 962DDE58
-  pacman-key --lsign-key 962DDE58
+  arch_chroot "pacman-key -r 962DDE58"
+  arch_chroot "pacman-key --lsign-key 962DDE58"
 
   install_list \
     ${pack_ib[*]} \
@@ -204,8 +208,8 @@ elif [[ "$graphics" == "a" ]]; then
 fi
 
 # ------ install, unmount and finish! ------
-pacman -Syy
-pacman -S ${INSTALL_LIST[*]}
+arch_chroot "pacman -Syy"
+arch_chroot "pacman -S ${INSTALL_LIST[*]}"
 
 [[ "$efi" == "y" ]] && umount "$MNT/boot"
 umount "$MNT"
