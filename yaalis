@@ -60,6 +60,7 @@ read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
 read -ep "[l]aptop/[d]esktop/[s]erver: " machine
 read -ep "[i]ntel/[n]vidia/[a]md/[n]o graphics: " graphics
+read -ep "edit extra settings? (fstab/makepkg/mkinitcpio/visudo) (y/n): " edit
 
 if [[ "$auto_gdisk" == "y" ]]; then
   # this needs to be run separately because sgdisk will
@@ -148,8 +149,6 @@ else
 fi
 
 # ------ finishing installation ------
-read -ep "edit extra settings? (fstab/makepkg/mkinitcpio/visudo) (y/n): " edit
-
 # edit settings (add discard for ssd)
 echo tmpfs /home/$username/.cache         tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
 echo tmpfs /home/$username/.compose-cache tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
@@ -196,7 +195,7 @@ fi
 if [[ "$machine" == "l" ]]; then
   install_list ${pack_laptop[*]}
 elif [[ "$machine" == "d" ]]; then
-  echo
+  echo "nothing"
 fi
 
 if [[ "$graphics" == "i" ]]; then
