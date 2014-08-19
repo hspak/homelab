@@ -18,6 +18,7 @@ install_list() {
     INSTALL_LIST=(${INSTALL_LIST[*]} $1)
     shift
   done
+  echo ${INSTALL_LIST[*]}
 }
 
 arch_chroot() {
@@ -82,9 +83,9 @@ else
   show_help
   gdisk "$drive"
   lsblk
+  [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
   read -ep "Boot partition: " boot_part
   read -ep "Root partition: " root_part
-  [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
 fi
 
 sgdisk -p $drive
@@ -135,9 +136,9 @@ if [[ "$efi" == "y" ]]; then
     echo "looks like entry was created"
   else
     touch "$MNT"/boot/loader/entries/arch.conf
-    echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
-    echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-    echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+    echo title  Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+    echo linux  /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+    echo initrd /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
 
     # TODO: use PARTUUID
     echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
@@ -163,8 +164,9 @@ if [[ "$edit" == "y" ]]; then
   arch_chroot "mkinitcpio -p linux"
 
   arch_chroot "visudo"
-  arch_chroot "passwd"
 fi
+
+arch_chroot "passwd"
 
 # ------ user creation ------
 arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username"
