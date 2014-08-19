@@ -57,9 +57,9 @@ read -ep "Automated disk partition? (y/n): " auto_gdisk
 read -ep "EFI (y/n): " efi
 read -ep "Need wifi (y/n): " wifi
 read -ep "Enter hostname: " hostname
-read -ep "Enter hostname: " username
+read -ep "Enter username: " username
 read -ep "[l]aptop/[d]esktop/[s]erver: " machine
-read -ep "[i]ntel/[n]vidia/[a]md graphics: " graphics
+read -ep "[i]ntel/[n]vidia/[a]md/[n]o graphics: " graphics
 
 if [[ "$auto_gdisk" == "y" ]]; then
   # this needs to be run separately because sgdisk will
