@@ -18,7 +18,6 @@ install_list() {
     INSTALL_LIST=(${INSTALL_LIST[*]} $1)
     shift
   done
-  echo ${INSTALL_LIST[*]}
 }
 
 arch_chroot() {
@@ -191,7 +190,7 @@ if [[ "$machine" != "s" ]]; then
     ${pack_X[*]} \
     ${pack_arch[*]} \
     ${pack_misc[*]} \
-    ${pack_devel[*]} \
+    ${pack_devel[*]}
 fi
 
 if [[ "$machine" == "l" ]]; then
