@@ -64,7 +64,7 @@ read -ep "[i]ntel/[n]vidia/[a]md/[n]o graphics: " graphics
 if [[ "$auto_gdisk" == "y" ]]; then
   # this needs to be run separately because sgdisk will
   # get the remaining space for the old partition layout
-  sgdisk -o
+  sgdisk -o $drive
 
   if [[ "$efi" == "y" ]]; then
     # 256M boot drive for efi
