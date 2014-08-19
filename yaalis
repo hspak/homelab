@@ -1,17 +1,33 @@
 #!/bin/bash
 
-# Meant to be run in a LiveCD
-# Only meant for GPT/UEFI systems
+# Meant to be run in a LiveCD/USB/etc.
 
 # TODO:
-#   - Merge base and install
 #   - Grab packages from a local server
 #   - Error catching?
 
 MNT=/mnt
+INSTALL_LIST=()
+
+source yaalis-packages
+
+# bash doesn't allow passing arrays, so everything
+# needs to be pass in already expanded
+install_list() {
+  while [[ ! -z $1 ]]; do
+    INSTALL_LIST=(${INSTALL_LIST[*]} $1)
+    shift
+  done
+}
 
 arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
+}
+
+as_user() {
+  user=$1
+  cmd=$2
+  sudo -u $user $cmd
 }
 
 show_help() {
@@ -41,6 +57,9 @@ read -ep "Automated disk partition? (y/n): " auto_gdisk
 read -ep "EFI (y/n): " efi
 read -ep "Need wifi (y/n): " wifi
 read -ep "Enter hostname: " hostname
+read -ep "Enter hostname: " username
+read -ep "[l]aptop/[d]esktop/[s]erver: " machine
+read -ep "[i]ntel/[n]vidia/[a]md graphics: " graphics
 
 if [[ "$auto_gdisk" == "y" ]]; then
   # this needs to be run separately because sgdisk will
@@ -48,9 +67,11 @@ if [[ "$auto_gdisk" == "y" ]]; then
   sgdisk -o
 
   if [[ "$efi" == "y" ]]; then
-    sgdisk -n 1:2048:524288 -n 2:526336:$(sgdisk -E $drive) $drive
+    # 256M boot drive for efi
+    sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) $drive
     boot_new="y"
   else
+    # 1M boot drive for non-efi
     sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) $drive
   fi
   boot_part="${drive}1"
@@ -75,7 +96,7 @@ fi
 
 # ------ package installation ------
 pacstrap "$MNT" base
-arch_chroot "pacman -Syu --noconfirm base-devel git"
+arch_chroot "pacman -Syu --noconfirm base-devel pkgfile"
 [[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
 
 if [[ "$efi" == "y" ]]; then
@@ -85,7 +106,6 @@ else
 fi
 
 # ------ setting installation ------
-# create fstab
 genfstab -p "$MNT" >> "$MNT"/etc/fstab
 
 ln -s "$MNT"/usr/share/zoneinfo/America/Indianapolis "$MNT"/etc/localtime
@@ -116,6 +136,8 @@ if [[ "$efi" == "y" ]]; then
     echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
     echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
     echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+
+    # TODO: use PARTUUID
     echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
     printf "Created entry\n"
   fi
@@ -124,9 +146,6 @@ else
   arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
 fi
 
-# set root passwd
-arch_chroot "passwd"
-
 # ------ finishing installation ------
 # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
 # edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
@@ -134,9 +153,60 @@ vi "$MNT"/etc/mkinitcpio.conf
 arch_chroot "mkinitcpio -p linux"
 
 # edit settings (add discard for ssd)
+echo tmpfs  /home/$USER/.cache         tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs  /home/$USER/.compose-cache tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
+echo tmpfs  /home/$USER/downloads      tmpfs uid=hsp,gid=users,nodev,nosuid,mode=755 0 0 >> /etc/fstab
 vi "$MNT"/etc/fstab
 
-# unmount and finish!
+vi "$MNT"/etc/makepkg.conf
+
+arch_chroot "passwd"
+
+# ------ user creation ------
+useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $USER
+passwd $USER
+visudo
+
+# ------ install packages ------
+if [[ "$machine" != "s" ]]; then
+  # Pretty fonts
+  echo \[infinality-bundle\] >> /etc/pacman.conf
+  echo Server = http://bohoomil.com/repo/\$arch >> /etc/pacman.conf
+  echo \[infinality-bundle-fonts\] >> /etc/pacman.conf
+  echo Server = http://bohoomil.com/repo/fonts >> /etc/pacman.conf
+
+  pacman-key -r 962DDE58
+  pacman-key --lsign-key 962DDE58
+
+  install_list \
+    ${pack_ib[*]} \
+    ${pack_fonts[*]} \
+    ${pack_themes[*]} \
+    ${pack_audio[*]} \
+    ${pack_X[*]} \
+    ${pack_arch[*]} \
+    ${pack_misc[*]} \
+    ${pack_devel[*]} \
+fi
+
+if [[ "$machine" == "l" ]]; then
+  install_list ${pack_laptop[*]}
+elif [[ "$machine" == "d" ]]; then
+  echo
+fi
+
+if [[ "$graphics" == "i" ]]; then
+  install_list ${pack_intel[*]}
+elif [[ "$graphics" == "n" ]]; then
+  install_list ${pack_nvidia[*]}
+elif [[ "$graphics" == "a" ]]; then
+  install_list ${pack_amd[*]}
+fi
+
+# ------ install, unmount and finish! ------
+pacman -Syy
+pacman -S ${INSTALL_LIST[*]}
+
 [[ "$efi" == "y" ]] && umount "$MNT/boot"
 umount "$MNT"
 
