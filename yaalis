@@ -59,7 +59,7 @@ read -ep "Need wifi (y/n): " wifi
 read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
 read -ep "[l]aptop/[d]esktop/[s]erver: " machine
-read -ep "[i]ntel/[n]vidia/[a]md/[n]o graphics: " graphics
+read -ep "[i]ntel/[n]vidia/[a]md/n[o] graphics: " graphics
 read -ep "edit extra settings? (fstab/makepkg/mkinitcpio/visudo) (y/n): " edit
 
 if [[ "$auto_gdisk" == "y" ]]; then
@@ -200,22 +200,25 @@ elif [[ "$machine" == "d" ]]; then
   echo "nothing"
 fi
 
+# I would like to only have to run pacman once,
+# but libgl dependency makes things harder
 if [[ "$graphics" == "i" ]]; then
-  install_list ${pack_intel[*]}
+  arch_chroot "pacman --noconfirm -S ${pack_intel[*]}"
 elif [[ "$graphics" == "n" ]]; then
-  install_list ${pack_nvidia[*]}
+  arch_chroot "pacman --noconfirm -S ${pack_nvidia[*]}"
 elif [[ "$graphics" == "a" ]]; then
-  install_list ${pack_amd[*]}
+  arch_chroot "pacman --noconfirm -S ${pack_amd[*]}"
 fi
 
 # ------ at least install cower ------
 mkdir /mnt/home/$username/tmp
 curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > /mnt/home/$username/tmp/PKGBUILD
-arch_chroot "chown -R hsp:users /home/$username/tmp"
-arch_chroot "su hsp -c 'cd ~/tmp && makepkg --noconfirm -sic'"
+arch_chroot "chown -R $username:users /home/$username/tmp"
+arch_chroot "su $username -c 'cd ~/tmp && makepkg --noconfirm -sic'"
 rm -r /mnt/home/$username/tmp
 
 # ------ install, unmount and finish! ------
+echo ${INSTALL_LIST[*]}
 arch_chroot "pacman -Syy"
 arch_chroot "pacman --noconfirm -S ${INSTALL_LIST[*]}"
 
