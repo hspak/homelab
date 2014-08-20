@@ -177,7 +177,7 @@ if [[ "$machine" != "s" ]]; then
   # Pretty fonts
   echo \[infinality-bundle\] >> $MNT/etc/pacman.conf
   echo Server = http://bohoomil.com/repo/\$arch >> $MNT/etc/pacman.conf
-  echo \[infinality-bundle-fonts\] >> /etc/pacman.conf
+  echo \[infinality-bundle-fonts\] >> $MNT/etc/pacman.conf
   echo Server = http://bohoomil.com/repo/fonts >> $MNT/etc/pacman.conf
 
   arch_chroot "pacman-key -r 962DDE58"
@@ -207,6 +207,13 @@ elif [[ "$graphics" == "n" ]]; then
 elif [[ "$graphics" == "a" ]]; then
   install_list ${pack_amd[*]}
 fi
+
+# ------ at least install cower ------
+mkdir /mnt/home/$username/tmp
+curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > /mnt/home/$username/tmp/PKGBUILD
+arch_chroot "chown -R hsp:users /home/$username/tmp"
+arch_chroot "su hsp -c 'cd ~/tmp && makepkg --noconfirm -sic'"
+rm -r /mnt/home/$username/tmp
 
 # ------ install, unmount and finish! ------
 arch_chroot "pacman -Syy"
