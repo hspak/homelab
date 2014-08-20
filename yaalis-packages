@@ -27,7 +27,7 @@ pack_fonts=(ttf-symbola \
 pack_ib=(infinality-bundle \
   ibfonts-meta-base \
   ibfonts-meta-extended \
-  ttf-source-code-pro-ibx)
+  otf-source-code-pro-ibx)
 
 pack_misc=(tmux \
   weechat \
@@ -54,7 +54,8 @@ pack_misc=(tmux \
   libnotify \
   transmission-cli \
   gdm \
-  gnome-keyring)
+  gnome-keyring \
+  x11-ssh-askpass)
 
 pack_devel=(vim \
   ctags \
