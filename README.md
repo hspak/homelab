@@ -15,11 +15,12 @@ your own risk!
 * step 4: pacstrap
 * step 5: genfstab
 * step 6: chroot
-* step 8: localtime, etc.
-* step 9: bootloader
-* step x: edit misc configs
-* step 7: packages
-* step 10: passwd
+* step 7: localtime, etc.
+* step 8: bootloader
+* step 9: edit misc configs
+* step 10: packages
+* step 11: passwd
+* step 12: reboot (manually)
  
 ### Packages
 
