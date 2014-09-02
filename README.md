@@ -3,9 +3,11 @@ YAALIS
 
 http://goo.gl/qybS5s
 
-Completely untested and incomplete
+Roughly tested and may work.
+This uses settings particular to the way I like my systems setup. Use blindly at
+your own risk!
  
-### Base
+### Steps
 
 * step 1: gdisk
 * step 2: formatting
@@ -13,11 +15,18 @@ Completely untested and incomplete
 * step 4: pacstrap
 * step 5: genfstab
 * step 6: chroot
-* step 7: pacman
 * step 8: localtime, etc.
 * step 9: bootloader
+* step x: edit misc configs
+* step 7: packages
 * step 10: passwd
  
-### Install
+### Packages
+
+These are all packages that may be installed depending on the type of install
+that was selected.
 
 ### Custom
+
+These are custom packages from the [AUR](https://aur.archlinux.org/) that I
+usually use on my systems.

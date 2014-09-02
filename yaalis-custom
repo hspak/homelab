@@ -15,8 +15,7 @@ makepkg -sic
 # arch
 pacaur -y pkgbuild-introspection-git
 
-# bspwm
-# pacaur -y bspwm-git sxhkd-git sutils-git xtitle-git txtw-git sres-git
+# theme
 pacaur -y dmenu2 numix-circle-icon-theme-git dzen2-git otf-powerline-symbols-git
 
 # i3
