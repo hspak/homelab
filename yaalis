@@ -98,7 +98,7 @@ fi
 
 # ------ package installation ------
 pacstrap "$MNT" base
-arch_chroot "pacman -Syu --noconfirm base-devel pkgfile"
+arch_chroot "pacman -Syu --noconfirm base-devel pkgfile zsh"
 [[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
 
 if [[ "$efi" == "y" ]]; then
