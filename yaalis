@@ -1,24 +1,8 @@
 #!/bin/bash
-
+#
 # Meant to be run in a LiveCD/USB/etc.
 
-# TODO:
-#   - Grab packages from a local server
-#   - Error catching?
-
 MNT=/mnt
-INSTALL_LIST=()
-
-source yaalis-packages
-
-# bash doesn't allow passing arrays, so everything
-# needs to be pass in already expanded
-install_list() {
-  while [[ ! -z $1 ]]; do
-    INSTALL_LIST=(${INSTALL_LIST[*]} $1)
-    shift
-  done
-}
 
 arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
@@ -30,21 +14,6 @@ as_user() {
   sudo -u $user $cmd
 }
 
-show_help() {
-  cat << EOF
-
-Boot drive (efi):
-  efi code = ef00
-  efi partition size = 512M (or smaller)
-  efi mount to /boot
-
-Boot drive (bios):
-  code = ef02
-  partition size = 1024K
-
-EOF
-}
-
 if [[ $EUID != 0 ]]; then
   printf "only root should run this script\n"
   exit 1
@@ -53,70 +22,35 @@ fi
 # ------ disk stuff ------
 lsblk
 read -ep "Which drive to install root: " drive
-read -ep "Automated disk partition? (y/n): " auto_gdisk
-read -ep "EFI (y/n): " efi
-read -ep "Need wifi (y/n): " wifi
 read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
-read -ep "[l]aptop/[d]esktop/[s]erver: " machine
-read -ep "[i]ntel/[n]vidia/[a]md/n[o] graphics: " graphics
-read -ep "edit extra settings? (fstab/makepkg/mkinitcpio/visudo) (y/n): " edit
 
-if [[ "$auto_gdisk" == "y" ]]; then
-  # this needs to be run separately because sgdisk will
-  # get the remaining space for the old partition layout
-  sgdisk -o $drive
+# this needs to be run separately because sgdisk will
+# get the remaining space for the old partition layout
+sgdisk -o $drive
 
-  if [[ "$efi" == "y" ]]; then
-    # 256M boot drive for efi
-    sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
-    boot_new="y"
-  else
-    # 1M boot drive for non-efi
-    sgdisk -n 1:2048:4096 -n 2:6144:$(sgdisk -E $drive) -t 1:EF02 -t 2:8300 $drive
-  fi
-  boot_part="${drive}1"
-  root_part="${drive}2"
-else
-  lsblk
-  show_help
-  gdisk "$drive"
-  lsblk
-  [[ "$efi" == "y" ]] && read -ep "New boot partition? (y/n): " boot_new
-  read -ep "Boot partition: " boot_part
-  read -ep "Root partition: " root_part
-fi
-
+sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
+boot_part="${drive}1"
+root_part="${drive}2"
 sgdisk -p $drive
 mkfs.ext4 -F "$root_part"
 mount "$root_part" "$MNT"
 mkdir "$MNT"/boot
-if [[ "$boot_new" == "y" && "$efi" == "y" ]]; then
-  mkfs.vfat -F32 $boot_part
-  mount "$boot_part" "$MNT"/boot
-fi
+mkfs.vfat -F32 $boot_part
+mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
-pacstrap "$MNT" base
-arch_chroot "pacman -Syu --noconfirm base-devel pkgfile zsh"
-[[ "$wifi" == "y" ]] && arch_chroot "pacman -S --noconfirm iw wpa_supplicant wpa_actiond dialog"
-
-if [[ "$efi" == "y" ]]; then
-  arch_chroot "pacman -S --noconfirm gummiboot"
-else
-  arch_chroot "pacman -S --noconfirm grub"
-fi
+vim /etc/pacman.d/mirrorlist
+pacstrap "$MNT" base base-devel pkgfile zsh gnome sudo iw wpa_supplicant gdm
 
 # ------ setting installation ------
 genfstab -p "$MNT" >> "$MNT"/etc/fstab
 
-ln -s "$MNT"/usr/share/zoneinfo/America/Indianapolis "$MNT"/etc/localtime
+ln -sf "$MNT"/usr/share/zoneinfo/America/Los_Angeles "$MNT"/etc/localtime
 printf "Set timezone\n"
 
 # create locale.conf
 echo LANG="en_US.UTF-8" > "$MNT"/etc/locale.conf
-echo LC_COLLATE="C" >> "$MNT"/etc/locale.conf
-echo LC_TIME="en_US.UTF-8" >> "$MNT"/etc/locale.conf
 
 # locale stuff
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
@@ -124,91 +58,41 @@ arch_chroot "locale-gen"
 
 # set hostname
 echo "$hostname" > "$MNT"/etc/hostname
+arch_chroot "hostnamectl set-hostname $hostname"
 printf "Set hostname\n"
 
 # set bootloader
-if [[ "$efi" == "y" ]]; then
-  arch_chroot "gummiboot install"
+arch_chroot "bootctl --path=esp install"
 
-  # it will probably fail to create the entry
-  if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
-    echo "looks like entry was created"
-  else
-    touch "$MNT"/boot/loader/entries/arch.conf
-    echo title  Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
-    echo linux  /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-    echo initrd /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
-
-    # TODO: use PARTUUID
-    echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
-    printf "Created entry\n"
-  fi
+# it will probably fail to create the entry
+if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
+  echo "looks like entry was created"
 else
-  arch_chroot "grub-install --target=i386-pc --recheck --debug $drive"
-  arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg"
+  touch "$MNT"/boot/loader/entries/arch.conf
+  echo title  Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+  echo linux  /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+  echo initrd /intel-ucode.img >> "$MNT"/boot/loader/entries/arch.conf
+  echo initrd /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+  # TODO: use UUID
+  echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
+  printf "Created entry\n"
 fi
 
 # ------ finishing installation ------
-# edit settings (add discard for ssd)
-echo tmpfs /home/$username/.cache         tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
-echo tmpfs /home/$username/.compose-cache tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
-echo tmpfs /home/$username/downloads      tmpfs uid=$username,gid=users,nodev,nosuid,mode=755 0 0 >> $MNT/etc/fstab
+vi "$MNT"/etc/fstab
+vi "$MNT"/etc/makepkg.conf
+# edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
+# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
+vi "$MNT"/etc/mkinitcpio.conf
+arch_chroot "mkinitcpio -p linux"
 
-if [[ "$edit" == "y" ]]; then
-  vi "$MNT"/etc/fstab
-  vi "$MNT"/etc/makepkg.conf
-  # edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
-  # edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
-  vi "$MNT"/etc/mkinitcpio.conf
-  arch_chroot "mkinitcpio -p linux"
-
-  arch_chroot "visudo"
-fi
-
+arch_chroot "visudo"
 arch_chroot "passwd"
 
 # ------ user creation ------
 echo "Creating user $username..."
-arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /bin/zsh $username"
+arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh $username"
 arch_chroot "passwd $username"
-
-# ------ install packages ------
-if [[ "$machine" != "s" ]]; then
-  # Pretty fonts
-  echo \[infinality-bundle\] >> $MNT/etc/pacman.conf
-  echo Server = http://bohoomil.com/repo/\$arch >> $MNT/etc/pacman.conf
-  echo \[infinality-bundle-fonts\] >> $MNT/etc/pacman.conf
-  echo Server = http://bohoomil.com/repo/fonts >> $MNT/etc/pacman.conf
-
-  arch_chroot "pacman-key -r 962DDE58"
-  arch_chroot "pacman-key --lsign-key 962DDE58"
-
-  install_list \
-    ${pack_ib[*]} \
-    ${pack_fonts[*]} \
-    ${pack_themes[*]} \
-    ${pack_audio[*]} \
-    ${pack_X[*]} \
-    ${pack_arch[*]} \
-    ${pack_misc[*]} \
-    ${pack_devel[*]}
-fi
-
-if [[ "$machine" == "l" ]]; then
-  install_list ${pack_laptop[*]}
-elif [[ "$machine" == "d" ]]; then
-  echo "nothing"
-fi
-
-# I would like to only have to run pacman once,
-# but libgl dependency makes things harder
-if [[ "$graphics" == "i" ]]; then
-  arch_chroot "pacman --noconfirm -S ${pack_intel[*]}"
-elif [[ "$graphics" == "n" ]]; then
-  arch_chroot "pacman --noconfirm -S ${pack_nvidia[*]}"
-elif [[ "$graphics" == "a" ]]; then
-  arch_chroot "pacman --noconfirm -S ${pack_amd[*]}"
-fi
 
 # ------ at least install cower ------
 mkdir /mnt/home/$username/tmp
@@ -218,11 +102,10 @@ arch_chroot "su $username -c 'cd ~/tmp && makepkg --noconfirm -sic'"
 rm -r /mnt/home/$username/tmp
 
 # ------ install, unmount and finish! ------
-echo ${INSTALL_LIST[*]}
+vim "$MNT/etc/pacman.d/mirrorlist"
 arch_chroot "pacman -Syy"
-arch_chroot "pacman --noconfirm -S ${INSTALL_LIST[*]}"
 
-[[ "$efi" == "y" ]] && umount "$MNT/boot"
+umount "$MNT/boot"
 umount "$MNT"
 
 cat << EOF
