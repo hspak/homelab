@@ -7,6 +7,7 @@
 # - Wireless required
 # - Gnome DE
 # - Firefox
+# - Neovim
 
 MNT=/mnt
 
@@ -48,7 +49,7 @@ mount "$boot_part" "$MNT"/boot
 # ------ package installation ------
 vim /etc/pacman.d/mirrorlist
 pacstrap "$MNT" linux linux-firmware intel-ucode \
-  base base-devel sudo pkgfile \
+  base base-devel sudo pkgfile asp \
   iw wpa_supplicant crda \
   zsh gnome gdm neovim python-neovim noto-fonts firefox
 
@@ -103,7 +104,6 @@ arch_chroot "passwd $username"
 
 # ------ install, unmount and finish! ------
 arch_chroot "systemctl enable gdm NetworkManager"
-arch_chroot "pacman -Syy"
 
 umount -R "$MNT"
 cat << EOF

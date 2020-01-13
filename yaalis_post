@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Meant to be run from Arch install
+
+sudo pacman -S go git mpv ranger curl gnome-tweaks
+
+mkdir -p ~/tmp
+cd ~/tmp
+curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/yay.tar.gz
+tar xf yay.tar.gz
+cd yay
+makepkg -si
+cd
+rm -rf ~/tmp
+
+yay -S wl-clipboard-git ttf-google-fonts-git
+nvim +PlugInstall
