@@ -14,4 +14,8 @@ cd
 rm -rf ~/tmp
 
 yay -S wl-clipboard-git ttf-google-fonts-git
+
+git clone https://github.com/hspak/dotfiles.git
+cd dotfiles
+./setup
 nvim +PlugInstall
