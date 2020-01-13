@@ -1,6 +1,12 @@
 #!/bin/bash
 #
-# Meant to be run in a LiveCD/USB/etc.
+# Meant to be from a LiveCD/USB/etc.
+# Assuptions:
+# - GPT only
+# - Intel CPU
+# - Wireless required
+# - Gnome DE
+# - Firefox
 
 MNT=/mnt
 
@@ -21,14 +27,19 @@ fi
 
 # ------ disk stuff ------
 lsblk
-read -ep "Which drive to install root: " drive
+read -ep "Which drive to install root (e.g /dev/sda): " drive
 read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
 
-# this needs to be run separately because sgdisk will
-# get the remaining space for the old partition layout
+# completely reset the drive
+sgdisk --zap-all $drive
+
+# clear partition data
 sgdisk -o $drive
 
+# Creates 2 paritions:
+# 1. 512MB for GPT boot parition on FAT32
+# 2. Everything else on EXT4
 sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
 boot_part="${drive}1"
 root_part="${drive}2"
@@ -41,75 +52,67 @@ mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
 vim /etc/pacman.d/mirrorlist
-pacstrap "$MNT" base base-devel pkgfile zsh gnome sudo iw wpa_supplicant gdm
+pacstrap "$MNT" linux linux-firmware intel-ucode \
+  base base-devel sudo pkgfile \
+  iw wpa_supplicant crda \
+  zsh gnome gdm neovim noto-fonts firefox
 
 # ------ setting installation ------
-genfstab -p "$MNT" >> "$MNT"/etc/fstab
+genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
 
-ln -sf "$MNT"/usr/share/zoneinfo/America/Los_Angeles "$MNT"/etc/localtime
-printf "Set timezone\n"
+# timezone
+arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
 
-# create locale.conf
-echo LANG="en_US.UTF-8" > "$MNT"/etc/locale.conf
+# hostname
+arch_chroot "hostnamectl set-hostname $hostname"
 
 # locale stuff
+localectl set-locale LANG=en_US.UTF-8
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
 arch_chroot "locale-gen"
 
-# set hostname
-echo "$hostname" > "$MNT"/etc/hostname
-arch_chroot "hostnamectl set-hostname $hostname"
-printf "Set hostname\n"
-
 # set bootloader
-arch_chroot "bootctl --path=esp install"
+arch_chroot "bootctl --path=/boot install"
 
-# it will probably fail to create the entry
-if [[ -f "$MNT/boot/loader/entries/arch.conf" ]]; then
-  echo "looks like entry was created"
-else
-  touch "$MNT"/boot/loader/entries/arch.conf
-  echo title  Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
-  echo linux  /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-  echo initrd /intel-ucode.img >> "$MNT"/boot/loader/entries/arch.conf
-  echo initrd /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
-  # TODO: use UUID
-  echo options root=$root_part rw quiet >> "$MNT"/boot/loader/entries/arch.conf
-  printf "Created entry\n"
-fi
+touch "$MNT"/boot/loader/entries/arch.conf
+echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  /intel-ucode.img >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/boot/loader/entries/arch.conf
 
 # ------ finishing installation ------
 vi "$MNT"/etc/fstab
 vi "$MNT"/etc/makepkg.conf
-# edit mkinitcpio (add ahci sd_mod ext4 to MODULES, systemd fsck for HOOKS)
-# edit mkinitcpio (virtio stuff: virtio, virtio_pci, virtio_blk, virtio_net, and virtio_ring)
+
+# MODULES=(i915 sd_mod ahci ext4)
+# MODULES=(i915 nvme ext4)
+# BINARIES=(fsck fsck.ext4)
+# FILES=()
+# HOOKS=(systemd)
+# COMPRESSION="lz4"
+# COMPRESSION_OPTIONS=(-1)
 vi "$MNT"/etc/mkinitcpio.conf
 arch_chroot "mkinitcpio -p linux"
 
-arch_chroot "visudo"
+arch_chroot "EDITOR=nvim visudo"
+echo "Enter a password for root"
 arch_chroot "passwd"
 
 # ------ user creation ------
 echo "Creating user $username..."
 arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh $username"
+echo "Enter a password for $username"
 arch_chroot "passwd $username"
-
-# ------ at least install cower ------
-mkdir /mnt/home/$username/tmp
-curl https://aur.archlinux.org/packages/co/cower/PKGBUILD > /mnt/home/$username/tmp/PKGBUILD
-arch_chroot "chown -R $username:users /home/$username/tmp"
-arch_chroot "su $username -c 'cd ~/tmp && makepkg --noconfirm -sic'"
-rm -r /mnt/home/$username/tmp
 
 # ------ install, unmount and finish! ------
 vim "$MNT/etc/pacman.d/mirrorlist"
+arch_chroot "systemctl enable gdm NetworkManager"
 arch_chroot "pacman -Syy"
 
-umount "$MNT/boot"
-umount "$MNT"
-
+umount -R "$MNT"
 cat << EOF
 
-"You're done! reboot into disk. (systemctl reboot)"
+"All done! reboot into disk. (systemctl reboot)"
 
 EOF
