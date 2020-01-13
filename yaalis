@@ -14,22 +14,17 @@ arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
 }
 
-as_user() {
-  user=$1
-  cmd=$2
-  sudo -u $user $cmd
-}
-
 if [[ $EUID != 0 ]]; then
   printf "only root should run this script\n"
   exit 1
 fi
 
-# ------ disk stuff ------
-lsblk
 read -ep "Which drive to install root (e.g /dev/sda): " drive
 read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
+
+# ------ disk stuff ------
+lsblk
 
 # completely reset the drive
 sgdisk --zap-all $drive
@@ -55,9 +50,10 @@ vim /etc/pacman.d/mirrorlist
 pacstrap "$MNT" linux linux-firmware intel-ucode \
   base base-devel sudo pkgfile \
   iw wpa_supplicant crda \
-  zsh gnome gdm neovim noto-fonts firefox
+  zsh gnome gdm neovim python-neovim noto-fonts firefox
 
 # ------ setting installation ------
+# tmpfs   /home/$username/.cache    tmpfs  rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
 
 # timezone
@@ -67,7 +63,7 @@ arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
 arch_chroot "hostnamectl set-hostname $hostname"
 
 # locale stuff
-localectl set-locale LANG=en_US.UTF-8
+arch_chroot "localectl set-locale LANG=en_US.UTF-8"
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
 arch_chroot "locale-gen"
 
@@ -106,7 +102,6 @@ echo "Enter a password for $username"
 arch_chroot "passwd $username"
 
 # ------ install, unmount and finish! ------
-vim "$MNT/etc/pacman.d/mirrorlist"
 arch_chroot "systemctl enable gdm NetworkManager"
 arch_chroot "pacman -Syy"
 
