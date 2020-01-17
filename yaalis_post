@@ -2,7 +2,7 @@
 #
 # Meant to be run from Arch install
 
-sudo pacman -S go git mpv ranger curl gnome-tweaks
+sudo pacman -S go git mpv ranger curl gnome-tweaks weechat firefox-i18n-ko
 
 mkdir -p ~/tmp
 cd ~/tmp
@@ -12,6 +12,9 @@ cd yay
 makepkg -si
 cd
 rm -rf ~/tmp
+
+mkdir -p ~/code/z
+curl -o ~/code/z/z.sh https://raw.githubusercontent.com/rupa/z/master/z.sh
 
 yay -S wl-clipboard-git ttf-google-fonts-git
 

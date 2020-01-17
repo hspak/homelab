@@ -51,7 +51,8 @@ vim /etc/pacman.d/mirrorlist
 pacstrap "$MNT" linux linux-firmware intel-ucode \
   base base-devel sudo pkgfile asp \
   iw wpa_supplicant crda \
-  zsh gnome gdm neovim python-neovim noto-fonts firefox
+  zsh gnome gdm neovim python-neovim noto-fonts firefox firefox-i18n-en-us libu2f-host
+
 
 # ------ setting installation ------
 # tmpfs   /home/$username/.cache    tmpfs  rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0
