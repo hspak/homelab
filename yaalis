@@ -3,7 +3,7 @@
 # Meant to be from a LiveCD/USB/etc.
 # Assuptions:
 # - GPT only
-# - Intel CPU
+# - Intel/AMD CPU
 # - Wireless required
 # - Gnome DE
 # - Firefox
@@ -23,6 +23,10 @@ fi
 read -ep "Which drive to install root (e.g /dev/sda): " drive
 read -ep "Enter hostname: " hostname
 read -ep "Enter username: " username
+read -ep "Intel CPU (y/n): " intel
+
+microcode=intel-ucode
+[[ "$intel" != "y" ]] && microcode=amd-ucode
 
 # ------ disk stuff ------
 lsblk
@@ -48,11 +52,7 @@ mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
 vim /etc/pacman.d/mirrorlist
-pacstrap "$MNT" linux linux-firmware intel-ucode \
-  base base-devel sudo pkgfile asp \
-  iw wpa_supplicant crda \
-  zsh gnome gdm neovim python-neovim noto-fonts firefox firefox-i18n-en-us libu2f-host
-
+pacstrap "$MNT" linux "$microcode" base base-devel sudo pkgfile
 
 # ------ setting installation ------
 # tmpfs   /home/$username/.cache    tmpfs  rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0
@@ -75,7 +75,7 @@ arch_chroot "bootctl --path=/boot install"
 touch "$MNT"/boot/loader/entries/arch.conf
 echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
 echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-echo initrd  /intel-ucode.img >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  "/${microcode}.img" >> "$MNT"/boot/loader/entries/arch.conf
 echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
 echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/boot/loader/entries/arch.conf
 

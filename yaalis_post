@@ -2,7 +2,11 @@
 #
 # Meant to be run from Arch install
 
-sudo pacman -S go git mpv ranger curl gnome-tweaks weechat firefox-i18n-ko
+sudo pacman -S \
+  go git mpv ranger curl \
+  gnome gdm neovim python-neovim noto-fonts noto-fonts-emoji gnome-tweaks  \
+  firefox ffirefox-i18n-ko irefox-i18n-en-us libu2f-host \
+  iw iwd crda zsh
 
 mkdir -p ~/tmp
 cd ~/tmp
@@ -15,6 +19,7 @@ rm -rf ~/tmp
 
 mkdir -p ~/code/z
 curl -o ~/code/z/z.sh https://raw.githubusercontent.com/rupa/z/master/z.sh
+touch ~/.z
 
 yay -S wl-clipboard-git ttf-google-fonts-git
 
