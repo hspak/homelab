@@ -23,11 +23,10 @@ if [[ $EUID != 0 ]]; then
   exit 1
 fi
 
-read -ep "Which drive to install root (e.g /dev/sda): " drive
-read -ep "Enter hostname: " hostname
-
 # ------ disk stuff ------
 lsblk
+read -ep "Which drive to install root (e.g /dev/sda): " drive
+read -ep "Enter hostname: " hostname
 
 # completely reset the drive
 sgdisk --zap-all $drive
@@ -51,7 +50,7 @@ mount "$boot_part" "$MNT"/boot
 # ------ package installation ------
 echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 arch_chroot "pacman-key --init"
-pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim
+pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
@@ -63,6 +62,7 @@ arch_chroot "systemctl enable fstrim.timer"
 arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
 arch_chroot "systemctl enable systemd-timesyncd.service"
 arch_chroot "timedatectl set-ntp true"
+arch_chroot "hwclock --systohc"
 
 # hostname
 arch_chroot "hostnamectl set-hostname $hostname"
@@ -71,6 +71,7 @@ arch_chroot "hostnamectl set-hostname $hostname"
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
 arch_chroot "localectl set-locale LANG=en_US.UTF-8"
 arch_chroot "locale-gen"
+echo "LANG=en_US.UTF-8" >> "$MNT"/etc/locale.conf
 
 # set bootloader
 arch_chroot "bootctl --path=/boot install"
