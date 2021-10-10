@@ -2,10 +2,12 @@
 #
 # Meant to be from a LiveCD/USB/etc.
 
+set -e
+
 MNT=/mnt
 
 PUBKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWDIH5VaGlCBgF8svMFxOXCg5WM8aBngYZXmksY1XR6"
-MIRROR='Server = https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch'
+MIRROR='Server = https://mirrors.xtom.com/archlinux/$repo/os/$arch'
 
 arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
@@ -42,9 +44,8 @@ mkfs.vfat -F32 $boot_part
 mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
-vim /etc/pacman.d/mirrorlist
-  echo "$MIRROR" >> 
-pacstrap "$MNT" linux intel-ucode base base-devel sudo pkgfile ripgrep fd rsync htop neovim
+echo "$MIRROR" >> vim /etc/pacman.d/mirrorlist
+pacstrap "$MNT" linux intel-ucode base sudo pkgfile ripgrep fd rsync htop neovim
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
