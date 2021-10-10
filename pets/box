@@ -2,6 +2,12 @@
 #
 # Meant to be from a LiveCD/USB/etc.
 
+# Some things got pulled out of the default arch iso that this relies on:
+# - gptfdisk   (need to update commands to use sfdisk instead)
+# - dosfstools (for mkfs.vfat - maybe something else can create the EFI boot drive now?)
+# - vim
+
+
 set -e
 
 MNT=/mnt
