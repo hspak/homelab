@@ -5,8 +5,6 @@
 # - GPT only
 # - Intel/AMD CPU
 # - Wireless required
-# - Gnome DE
-# - Firefox
 # - Neovim
 
 MNT=/mnt
@@ -38,7 +36,7 @@ sgdisk --zap-all $drive
 sgdisk -o $drive
 
 # Creates 2 paritions:
-# 1. 512MB for GPT boot parition on FAT32
+# 1. 256MB for GPT boot parition on FAT32
 # 2. Everything else on EXT4
 sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
 boot_part="${drive}1"
@@ -52,7 +50,7 @@ mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
 vim /etc/pacman.d/mirrorlist
-pacstrap "$MNT" linux "$microcode" base base-devel sudo pkgfile
+pacstrap "$MNT" linux "$microcode" base base-devel sudo pkgfile ripgrep fd rsync htop
 
 # ------ setting installation ------
 # tmpfs   /home/$username/.cache    tmpfs  rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0
@@ -104,7 +102,10 @@ echo "Enter a password for $username"
 arch_chroot "passwd $username"
 
 # ------ install, unmount and finish! ------
-arch_chroot "systemctl enable gdm NetworkManager"
+# arch_chroot "systemctl enable gdm NetworkManager"
+
+# Probably want to enable this on an SSD
+# arch_chroot "systemctl enable fstrim.timer"
 
 umount -R "$MNT"
 cat << EOF
@@ -112,3 +113,6 @@ cat << EOF
 "All done! reboot into disk. (systemctl reboot)"
 
 EOF
+
+# intel thing to keep track
+# dev.i915.perf_stream_paranoid=0
