@@ -2,11 +2,10 @@
 #
 # Meant to be from a LiveCD/USB/etc.
 
-# Some things got pulled out of the default arch iso that this relies on:
-# - gptfdisk   (need to update commands to use sfdisk instead)
-# - dosfstools (for mkfs.vfat - maybe something else can create the EFI boot drive now?)
-# - vim
-
+# I'm building a custom ISO from baseline which doesn't have all the nice things that the default Arsh ISO (releng) has:
+# - gptfdisk             (need to update commands to use sfdisk instead)
+# - dosfstools           (for mkfs.vfat - maybe something else can create the EFI boot drive now?)
+# - arch-install-scripts (for pacstrap and genfstab)
 
 set -e
 
@@ -50,7 +49,7 @@ mkfs.vfat -F32 $boot_part
 mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
-echo "$MIRROR" >> vim /etc/pacman.d/mirrorlist
+echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 pacstrap "$MNT" linux intel-ucode base sudo pkgfile ripgrep fd rsync htop neovim
 
 # ------ setting installation ------
