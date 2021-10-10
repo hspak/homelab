@@ -1,0 +1,116 @@
+#!/bin/bash
+#
+# Meant to be from a LiveCD/USB/etc.
+
+MNT=/mnt
+
+PUBKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWDIH5VaGlCBgF8svMFxOXCg5WM8aBngYZXmksY1XR6"
+MIRROR='Server = https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch'
+
+arch_chroot() {
+  arch-chroot "$MNT" /bin/bash -c "${1}"
+}
+
+if [[ $EUID != 0 ]]; then
+  printf "only root should run this script\n"
+  exit 1
+fi
+
+read -ep "Which drive to install root (e.g /dev/sda): " drive
+read -ep "Enter hostname: " hostname
+
+# ------ disk stuff ------
+lsblk
+
+# completely reset the drive
+sgdisk --zap-all $drive
+
+# clear partition data
+sgdisk -o $drive
+
+# Creates 2 paritions:
+# 1. 256MB for GPT boot parition on FAT32
+# 2. Everything else on EXT4
+sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
+boot_part="${drive}1"
+root_part="${drive}2"
+sgdisk -p $drive
+mkfs.ext4 -F "$root_part"
+mount "$root_part" "$MNT"
+mkdir "$MNT"/boot
+mkfs.vfat -F32 $boot_part
+mount "$boot_part" "$MNT"/boot
+
+# ------ package installation ------
+vim /etc/pacman.d/mirrorlist
+  echo "$MIRROR" >> 
+pacstrap "$MNT" linux intel-ucode base base-devel sudo pkgfile ripgrep fd rsync htop neovim
+
+# ------ setting installation ------
+genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
+
+# SSD setup
+arch_chroot "systemctl enable fstrim.timer"
+
+# time stuff
+arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
+arch_chroot "systemctl enable systemd-timesyncd.service"
+arch_chroot "timedatectl set-ntp true"
+
+# hostname
+arch_chroot "hostnamectl set-hostname $hostname"
+
+# locale stuff
+echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
+arch_chroot "localectl set-locale LANG=en_US.UTF-8"
+arch_chroot "locale-gen"
+
+# set bootloader
+arch_chroot "bootctl --path=/boot install"
+
+touch "$MNT"/boot/loader/entries/arch.conf
+echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  "/intel-ucode.img" >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/boot/loader/entries/arch.conf
+
+# setup systemd-resolved
+arch_chroot "systemctl enable systemd-resolved"
+arch_chroot "ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf"
+
+# setup systemd-networkd
+touch "$MNT"/etc/systemd/network/20-enp4s0.network
+echo "[Match]" >> "$MNT"/etc/systemd/network/20-enp4s0.network
+echo "Name=enp4s0" >> "$MNT"/etc/systemd/network/20-enp4s0.network
+echo "[Network]" >> "$MNT"/etc/systemd/network/20-enp4s0.network
+echo "DHCP=yes" >> "$MNT"/etc/systemd/network/20-enp4s0.network
+arch_chroot "systemctl enable systemd-networkd"
+
+# setup ssh
+arch_chroot "mkdir /root/.ssh"
+echo "$PUBKEY" >> "$MNT"/root/.ssh/authorized_keys
+arch_chroot "chmod 0600 /root/.ssh/authorized_keys"
+arch_chroot "systemctl enable sshd"
+
+# ------ finishing installation ------
+arch_chroot "mkinitcpio -p linux"
+
+# ------ user management ------
+arch_chroot "EDITOR=nvim visudo"
+echo "Enter a password for root"
+arch_chroot "passwd"
+
+echo "Creating user hsp"
+arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh hsp"
+echo "Enter a password for hsp"
+arch_chroot "passwd hsp"
+
+# ------ install, unmount and finish! ------
+umount -R "$MNT"/boot
+umount -R "$MNT"
+cat << EOF
+
+"All done! reboot into disk. (systemctl reboot)"
+
+EOF
