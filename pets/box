@@ -50,7 +50,7 @@ mount "$boot_part" "$MNT"/boot
 echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 # Hm pacstrap fails because of gpg stuff but we can't run arch-chroot without pacstrap first!
-pacstrap || true
+pacstrap "$MNT" || true
 
 arch_chroot "pacman-key --init"
 pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh
