@@ -26,7 +26,6 @@ fi
 # ------ disk stuff ------
 lsblk
 read -ep "Which drive to install root (e.g /dev/sda): " drive
-read -ep "Enter hostname: " hostname
 
 # completely reset the drive
 sgdisk --zap-all $drive
@@ -49,6 +48,10 @@ mount "$boot_part" "$MNT"/boot
 
 # ------ package installation ------
 echo "$MIRROR" >> /etc/pacman.d/mirrorlist
+
+# Hm pacstrap fails because of gpg stuff but we can't run arch-chroot without pacstrap first!
+pacstrap || true
+
 arch_chroot "pacman-key --init"
 pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh
 
@@ -65,7 +68,7 @@ arch_chroot "timedatectl set-ntp true"
 arch_chroot "hwclock --systohc"
 
 # hostname
-arch_chroot "hostnamectl set-hostname $hostname"
+arch_chroot "hostnamectl set-hostname box"
 
 # locale stuff
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
