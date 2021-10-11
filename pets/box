@@ -52,8 +52,8 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 # Hm pacstrap fails because of gpg stuff but we can't run arch-chroot without pacstrap first!
 pacstrap "$MNT" || true
 
-arch_chroot "pacman-key --init"
-pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh
+arch-chroot "$MNT" "pacman-key --init"
+pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
