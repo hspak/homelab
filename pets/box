@@ -86,7 +86,7 @@ echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/
 
 # setup systemd-resolved
 arch_chroot "systemctl enable systemd-resolved"
-arch_chroot "ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf"
+ln -sf /run/systemd/resolve/stub-resolv.conf "$MNT"/etc/resolv.conf
 
 # setup systemd-networkd
 touch "$MNT"/etc/systemd/network/20-enp4s0.network
