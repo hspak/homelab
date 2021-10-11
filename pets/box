@@ -65,9 +65,6 @@ arch_chroot "systemctl enable systemd-timesyncd.service"
 arch_chroot "timedatectl set-ntp true"
 arch_chroot "hwclock --systohc"
 
-# hostname
-arch_chroot "hostnamectl set-hostname box"
-
 # locale stuff
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
 arch_chroot "localectl set-locale LANG=en_US.UTF-8"
@@ -101,6 +98,10 @@ arch_chroot "mkdir /root/.ssh"
 echo "$PUBKEY" >> "$MNT"/root/.ssh/authorized_keys
 arch_chroot "chmod 0600 /root/.ssh/authorized_keys"
 arch_chroot "systemctl enable sshd"
+
+# hostname
+arch_chroot "hostnamectl set-hostname box"
+echo "box" >> "$MNT"/etc/hostname
 
 # ------ finishing installation ------
 arch_chroot "mkinitcpio -p linux"
