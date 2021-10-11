@@ -51,7 +51,7 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 pacman-key --init
 pacman-key --populate archlinux
-pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash ssh
+pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
