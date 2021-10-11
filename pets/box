@@ -93,18 +93,9 @@ echo "[Network]" >> "$MNT"/etc/systemd/network/20-enp4s0.network
 echo "DHCP=yes" >> "$MNT"/etc/systemd/network/20-enp4s0.network
 arch_chroot "systemctl enable systemd-networkd"
 
-# setup ssh
-arch_chroot "mkdir /root/.ssh"
-echo "$PUBKEY" >> "$MNT"/root/.ssh/authorized_keys
-arch_chroot "chmod 0600 /root/.ssh/authorized_keys"
-arch_chroot "systemctl enable sshd"
-
 # hostname
 arch_chroot "hostnamectl set-hostname box"
 echo "box" >> "$MNT"/etc/hostname
-
-# ------ finishing installation ------
-arch_chroot "mkinitcpio -p linux"
 
 # ------ user management ------
 arch_chroot "EDITOR=nvim visudo"
@@ -116,7 +107,18 @@ arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh hs
 echo "Enter a password for hsp"
 arch_chroot "passwd hsp"
 
+# setup ssh
+arch_chroot "mkdir -p /home/hsp/.ssh"
+arch_chroot "chown -R hsp:users /home/hsp/.ssh"
+echo "$PUBKEY" >> "$MNT"/home/hsp/.ssh/authorized_keys
+arch_chroot "chmod 0600 /home/hsp/.ssh/authorized_keys"
+arch_chroot "chown hsp:users /home/hsp/.ssh/authorized_keys"
+echo "PasswordAuthentication no" >> "$MNT"/etc/sshd_config
+echo "PermitRootLogin no" >> "$MNT"/etc/sshd_config
+arch_chroot "systemctl enable sshd"
+
 # ------ install, unmount and finish! ------
+arch_chroot "mkinitcpio -p linux"
 umount -R "$MNT"/boot
 umount -R "$MNT"
 cat << EOF
