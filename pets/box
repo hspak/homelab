@@ -50,6 +50,7 @@ mount "$boot_part" "$MNT"/boot
 echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 pacman-key --init
+pacman-key --populate archlinux
 pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash
 
 # ------ setting installation ------
