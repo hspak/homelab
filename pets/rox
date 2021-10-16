@@ -51,7 +51,7 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 pacman-key --init
 pacman-key --populate archlinux
-pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
+pacstrap "$MNT" base linux linux-firmware amd-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
@@ -77,7 +77,7 @@ arch_chroot "bootctl --path=/boot install"
 touch "$MNT"/boot/loader/entries/arch.conf
 echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
 echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
-echo initrd  "/intel-ucode.img" >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  "/amd-ucode.img" >> "$MNT"/boot/loader/entries/arch.conf
 echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
 echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/boot/loader/entries/arch.conf
 
@@ -86,11 +86,11 @@ arch_chroot "systemctl enable systemd-resolved"
 ln -sf /run/systemd/resolve/stub-resolv.conf "$MNT"/etc/resolv.conf
 
 # setup systemd-networkd
-touch "$MNT"/etc/systemd/network/20-enp4s0.network
-echo "[Match]" >> "$MNT"/etc/systemd/network/20-enp4s0.network
-echo "Name=enp4s0" >> "$MNT"/etc/systemd/network/20-enp4s0.network
-echo "[Network]" >> "$MNT"/etc/systemd/network/20-enp4s0.network
-echo "DHCP=yes" >> "$MNT"/etc/systemd/network/20-enp4s0.network
+touch "$MNT"/etc/systemd/network/20-enp1s0.network
+echo "[Match]" >> "$MNT"/etc/systemd/network/20-enp1s0.network
+echo "Name=enp1s0" >> "$MNT"/etc/systemd/network/20-enp1s0.network
+echo "[Network]" >> "$MNT"/etc/systemd/network/20-enp1s0.network
+echo "DHCP=yes" >> "$MNT"/etc/systemd/network/20-enp1s0.network
 arch_chroot "systemctl enable systemd-networkd"
 
 # hostname
