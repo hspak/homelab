@@ -1,0 +1,18 @@
+[Unit]
+Description=TheLounge Docker Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker exec %n stop
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull thelounge/thelounge:latest
+ExecStart=/usr/bin/docker run --rm --name %n \
+    -v /opt/thelounge:/var/opt/thelounge \
+    -p 9000:9000 \
+    thelounge/thelounge:latest
+
+[Install]
+WantedBy=default.target

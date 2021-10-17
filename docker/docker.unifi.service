@@ -1,0 +1,22 @@
+[Unit]
+Description=Unifi Controller Docker Service
+After=docker.service
+Requires=docker.service
+Requires=docker.mongodb.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker exec %n stop
+ExecStartPre=-/usr/bin/docker rm %n
+ExecStartPre=/usr/bin/docker pull jacobalberty/unifi:latest
+ExecStart=/usr/bin/docker run --rm --name %n \
+    --init \
+    -p 8080:8080 \
+    -p 8443:8443 \
+    -p 3478:3478/udp \
+    -v /opt/unifi:/unifi \
+    jacobalberty/unifi:latest
+
+[Install]
+WantedBy=default.target
