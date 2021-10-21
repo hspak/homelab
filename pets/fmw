@@ -11,11 +11,14 @@ set -e
 
 MNT=/mnt
 
-PUBKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWDIH5VaGlCBgF8svMFxOXCg5WM8aBngYZXmksY1XR6"
-MIRROR='Server = https://mirrors.ocf.berkeley.edu/archlinux/$repo/os/$arch'
+MIRROR='Server = https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch'
 
 arch_chroot() {
   arch-chroot "$MNT" /bin/bash -c "${1}"
+}
+
+arch_chroot_user() {
+  arch-chroot -u hsp "$MNT" /bin/bash -c "${1}"
 }
 
 if [[ $EUID != 0 ]]; then
@@ -54,6 +57,7 @@ pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rs
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
+echo 'tmpfs   			/home/hsp/.cache	tmpfs 	rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0' > "$MNT"/etc/fstab
 
 # SSD setup
 arch_chroot "systemctl enable fstrim.timer"
@@ -98,6 +102,8 @@ arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh hs
 echo "Enter a password for hsp"
 arch_chroot "passwd hsp"
 
+arch_chroot_user "curl -o"
+arch_chroot_user "curl -o"
 # TODO: Maybe consider running fmw_post in the chroot and just do everything in one go
 
 # ------ install, unmount and finish! ------

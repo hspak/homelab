@@ -40,6 +40,11 @@ sudo pacman -S \
   ttf-croscore ttf-roboto ttf-inconsolata ttf-opensans
 sudo zur -S ttf-merriweather ttf-merriweather-sans ttf-oswald ttf-quintessential ttf-signika
 
+# Terminal
+sudo pacman -S libutf8proc check ttf-dejavu
+zur -S foot-terminfo fcft tllist
+zur -S foot-git
+
 # Sway stuff
 zur -S swayidle-git swaybg-git wlroots-git swaylock-git wl-clipboard-git
 zur -S sway-git grim-git mako-git \
@@ -49,3 +54,10 @@ zur -S sway-git grim-git mako-git \
 git clone https://github.com/hspak/dotfiles.git
 cd dotfiles
 ./setup
+
+# Arch neovim treesitter is stale
+zur -S neovim-git
+
+# passwords
+curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --import
+zur -S 1password
