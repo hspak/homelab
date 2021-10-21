@@ -24,8 +24,7 @@ if [[ $EUID != 0 ]]; then
 fi
 
 # ------ disk stuff ------
-lsblk
-read -ep "Which drive to install root (e.g /dev/sda): " drive
+drive=/dev/nvme0n1
 
 # completely reset the drive
 sgdisk --zap-all $drive
@@ -37,8 +36,8 @@ sgdisk -o $drive
 # 1. 256MB for GPT boot parition on FAT32
 # 2. Everything else on EXT4
 sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
-boot_part="${drive}1"
-root_part="${drive}2"
+boot_part="${drive}p1"
+root_part="${drive}p2"
 sgdisk -p $drive
 mkfs.ext4 -F "$root_part"
 mount "$root_part" "$MNT"
