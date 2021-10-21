@@ -8,13 +8,21 @@
 sudo pacman -Syy
 
 sudo pacman -S \
-  go mpv ranger curl \
-  gnome python-neovim noto-fonts noto-fonts-emoji ttf-google-fonts-git gnome-tweaks  \
-  firefox ffirefox-i18n-ko irefox-i18n-en-us libu2f-host \
+  base-devel go mpv ranger curl \
+  gnome python-neovim noto-fonts noto-fonts-emoji gnome-tweaks  \
+  firefox firefox-i18n-ko firefox-i18n-en-us \
   iw crda zsh
 
+# Bootstrap AUR helper
 mkdir -p ~/tmp
 cd ~/tmp
+
+curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/zig-master-bin.tar.gz
+tar xf zig-master-bin.tar.gz
+cd zig-master-bin
+makepkg -si
+
+cd ..
 curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/zur.tar.gz
 tar xf zur.tar.gz
 cd zur
@@ -26,9 +34,17 @@ mkdir -p ~/code/z
 curl -o ~/code/z/z.sh https://raw.githubusercontent.com/rupa/z/master/z.sh
 touch ~/.z
 
-zur -S sway-git swayidle-git swaylock-git wlroots-git wl-clipboard-git \
-  grim-git mako-git \
-  brightnessztl i3status-rust-git ttf-font-awesome-4
+# Just install all the fonts
+sudo pacman -S \
+  noto-font-extra ttf-fira-sans ttf-fira-mono ttf-ubuntu-font-family \
+  ttf-croscore ttf-roboto ttf-inconsolata ttf-opensans
+sudo zur -S ttf-merriweather ttf-merriweather-sans ttf-oswald ttf-quintessential ttf-signika
+
+# Sway stuff
+zur -S swayidle-git swaybg-git wlroots-git swaylock-git wl-clipboard-git
+zur -S sway-git grim-git mako-git \
+  ttf-google-fonts-git ttf-font-awesome-4 \
+  brightnessztl i3status-rust-git 
 
 git clone https://github.com/hspak/dotfiles.git
 cd dotfiles

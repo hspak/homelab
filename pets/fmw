@@ -98,6 +98,8 @@ arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh hs
 echo "Enter a password for hsp"
 arch_chroot "passwd hsp"
 
+# TODO: Maybe consider running fmw_post in the chroot and just do everything in one go
+
 # ------ install, unmount and finish! ------
 arch_chroot "mkinitcpio -p linux"
 umount -R "$MNT"/boot
