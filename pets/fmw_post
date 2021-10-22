@@ -11,7 +11,8 @@ sudo pacman -S \
   base-devel go mpv ranger curl \
   gnome python-neovim noto-fonts noto-fonts-emoji gnome-tweaks  \
   firefox firefox-i18n-ko firefox-i18n-en-us \
-  iw crda zsh
+  iw crda zsh usbutils man-db bluez-utils pavucontrol \
+  xdg-desktop-portal-wlr
 
 # Bootstrap AUR helper
 mkdir -p ~/tmp
