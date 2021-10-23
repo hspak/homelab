@@ -97,14 +97,20 @@ arch_chroot "EDITOR=nvim visudo"
 echo "Enter a password for root"
 arch_chroot "passwd"
 
+
+# groups
+# - wheel for sudo
+# - adm,systemd-journal for system perms
+# - input - for fprintd(?) and libinput shenanigans
 echo "Creating user hsp"
-arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal -s /usr/bin/zsh hsp"
+arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal,input -s /usr/bin/zsh hsp"
+
 echo "Enter a password for hsp"
 arch_chroot "passwd hsp"
 
-arch_chroot_user "curl -o"
-arch_chroot_user "curl -o"
-# TODO: Maybe consider running fmw_post in the chroot and just do everything in one go
+arch_chroot_user "curl -o /home/hsp/post.sh https://raw.githubusercontent.com/hspak/homelab/master/laptops/post.sh"
+arch_chroot_user "chmod +x /home/hsp/post.sh"
+arch_chroot_user "/home/hsp/post.sh"
 
 # ------ install, unmount and finish! ------
 arch_chroot "mkinitcpio -p linux"

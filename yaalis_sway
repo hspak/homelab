@@ -1,7 +1,0 @@
-#!/bin/bash
-#
-# Sway packages
-sudo pacman -Sy && sudo pacman -S bemenu
-yay -S sway-git swayidle-git swaylock-git wlroots-git wl-clipboard-git \
-  grim-git mako-git \
-  brightnessztl i3status-rust-git ttf-font-awesome-4

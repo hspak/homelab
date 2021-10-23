@@ -1,23 +1,25 @@
 #!/bin/bash
 #
-# Meant to be run from Arch install
-
-# TODO:
-# Some wifi network automation stuff
+# Stuff that I will probably never get to:
+# - Some wifi network automation stuff
+# - fprint stuff
+# - manual overrides
+#   - start iwd with a delay to workaround some iwlwifi stack trace during boot
 
 sudo pacman -Syy
 
 sudo pacman -S \
-  base-devel go mpv ranger curl \
-  gnome python-neovim noto-fonts noto-fonts-emoji gnome-tweaks  \
+  base-devel go mpv ranger curl \a
+  gnome gdm python-neovim noto-fonts noto-fonts-emoji gnome-tweaks \
   firefox firefox-i18n-ko firefox-i18n-en-us \
   iw crda zsh usbutils man-db bluez-utils pavucontrol \
-  xdg-desktop-portal-wlr
+  xdg-desktop-portal-wlr tailscale
 
 # Bootstrap AUR helper
 mkdir -p ~/tmp
 cd ~/tmp
 
+# TODO: changeme - I don't like how this is packaged
 curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/zig-master-bin.tar.gz
 tar xf zig-master-bin.tar.gz
 cd zig-master-bin
@@ -47,14 +49,15 @@ zur -S foot-terminfo fcft tllist
 zur -S foot-git
 
 # Sway stuff
-zur -S swayidle-git swaybg-git wlroots-git swaylock-git wl-clipboard-git
-zur -S sway-git grim-git mako-git \
+pacamn -S swayidle swaybg wlroots swaylock sway
+zur -S grim-git mako-git wl-clipboard-git \
   ttf-google-fonts-git ttf-font-awesome-4 \
   brightnessztl i3status-rust-git 
 
 git clone https://github.com/hspak/dotfiles.git
 cd dotfiles
 ./setup
+cd
 
 # Arch neovim treesitter is stale
 zur -S neovim-git
