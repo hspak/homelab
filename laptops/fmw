@@ -53,6 +53,7 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 pacman-key --init
 pacman-key --populate archlinux
+pacman -Sy archlinux-keyring
 pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh git iwd
 
 # ------ setting installation ------
