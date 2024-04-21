@@ -41,7 +41,7 @@ touch ~/.z
 
 # Just install all the fonts
 sudo pacman -S \
-  noto-font-extra ttf-fira-sans ttf-fira-mono \
+  noto-fonts-extra ttf-fira-sans ttf-fira-mono \
   ttf-croscore ttf-roboto ttf-inconsolata ttf-opensans
 # sudo zur -S ttf-merriweather ttf-merriweather-sans ttf-oswald ttf-quintessential ttf-signika
 
@@ -49,6 +49,8 @@ git clone https://github.com/hspak/dotfiles.git
 cd dotfiles
 ./setup
 cd
+
+systemctl enable --user ssh-agent
 
 # passwords
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --import
