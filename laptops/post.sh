@@ -15,6 +15,8 @@ sudo pacman -S \
   iw crda zsh usbutils man-db bluez-utils \
   tailscale wl-clipboard
 
+sudo pacman -Rsn falkon kmix angelfish konqueror marble
+
 # Bootstrap AUR helper
 # mkdir -p ~/tmp
 # cd ~/tmp
