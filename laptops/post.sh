@@ -10,7 +10,7 @@ sudo pacman -Syy
 
 sudo pacman -S \
   base-devel go mpv ranger curl \
-  plasma kde-applications sddm sddm-kcm neovim python-neovim noto-fonts noto-fonts-emoji \
+  plasma kde-applications sddm sddm-kcm neovim python-neovim \
   firefox firefox-i18n-ko firefox-i18n-en-us \
   iw crda zsh usbutils man-db bluez-utils \
   tailscale wl-clipboard
@@ -41,7 +41,7 @@ touch ~/.z
 
 # Just install all the fonts
 sudo pacman -S \
-  noto-fonts-extra ttf-fira-sans ttf-fira-mono \
+  noto-fonts noto-fonts-extra noto-fonts-emoji ttf-fira-sans ttf-fira-mono \
   ttf-croscore ttf-roboto ttf-inconsolata ttf-opensans
 # sudo zur -S ttf-merriweather ttf-merriweather-sans ttf-oswald ttf-quintessential ttf-signika
 
