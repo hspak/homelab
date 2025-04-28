@@ -1,0 +1,124 @@
+#!/bin/bash
+#
+# Meant to be from a LiveCD/USB/etc.
+
+# I'm building a custom ISO from baseline which doesn't have all the nice things that the default Arsh ISO (releng) has:
+# - gptfdisk             (need to update commands to use sfdisk instead)
+# - dosfstools           (for mkfs.vfat - maybe something else can create the EFI boot drive now?)
+# - arch-install-scripts (for pacstrap and genfstab)
+
+set -e
+
+MNT=/mnt
+
+MIRROR='Server = https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch'
+
+arch_chroot() {
+  arch-chroot "$MNT" /bin/bash -c "${1}"
+}
+
+arch_chroot_user() {
+  arch-chroot -u hsp "$MNT" /bin/bash -c "${1}"
+}
+
+if [[ $EUID != 0 ]]; then
+  printf "only root should run this script\n"
+  exit 1
+fi
+
+# ------ disk stuff ------
+drive=/dev/nvme0n1
+
+# completely reset the drive
+sgdisk --zap-all $drive
+
+# clear partition data
+sgdisk -o $drive
+
+# Creates 2 paritions:
+# 1. 256MB for GPT boot parition on FAT32
+# 2. Everything else on EXT4
+sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
+boot_part="${drive}p1"
+root_part="${drive}p2"
+sgdisk -p $drive
+mkfs.ext4 -F "$root_part"
+mount "$root_part" "$MNT"
+mkdir "$MNT"/boot
+mkfs.vfat -F32 $boot_part
+mount "$boot_part" "$MNT"/boot
+
+# ------ package installation ------
+echo "$MIRROR" >> /etc/pacman.d/mirrorlist
+
+pacman-key --init
+pacman-key --populate archlinux
+pacman -Sy archlinux-keyring
+pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh git iwd systemd-resolved
+
+# ------ setting installation ------
+genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
+echo 'tmpfs   			/home/hsp/.cache	tmpfs 	rw,size=6G,nodev,nosuid,uid=hsp,gid=users,mode=1700 0 0' > "$MNT"/etc/fstab
+
+# SSD setup
+arch_chroot "systemctl enable fstrim.timer"
+
+# time stuff
+arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
+arch_chroot "systemctl enable systemd-timesyncd.service"
+arch_chroot "timedatectl set-ntp true"
+arch_chroot "hwclock --systohc"
+
+# locale stuff
+echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
+arch_chroot "localectl set-locale LANG=en_US.UTF-8"
+arch_chroot "locale-gen"
+echo "LANG=en_US.UTF-8" >> "$MNT"/etc/locale.conf
+
+# set bootloader
+arch_chroot "bootctl --path=/boot install"
+
+touch "$MNT"/boot/loader/entries/arch.conf
+echo title   Arch Linux >> "$MNT"/boot/loader/entries/arch.conf
+echo linux   /vmlinuz-linux >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  "/intel-ucode.img" >> "$MNT"/boot/loader/entries/arch.conf
+echo initrd  /initramfs-linux.img >> "$MNT"/boot/loader/entries/arch.conf
+echo options root=PARTUUID=$(lsblk -dno PARTUUID $root_part) rw quiet >> "$MNT"/boot/loader/entries/arch.conf
+
+# setup systemd-resolved
+arch_chroot "systemctl enable systemd-resolved"
+ln -sf /run/systemd/resolve/stub-resolv.conf "$MNT"/etc/resolv.conf
+
+# hostname
+arch_chroot "hostnamectl set-hostname fmw"
+echo "fmw" >> "$MNT"/etc/hostname
+
+# ------ user management ------
+arch_chroot "EDITOR=nvim visudo"
+echo "Enter a password for root"
+arch_chroot "passwd"
+
+
+# groups
+# - wheel for sudo
+# - adm,systemd-journal for system perms
+# - input - for fprintd(?) and libinput shenanigans
+echo "Creating user hsp"
+arch_chroot "useradd -m -g users -G wheel,adm,systemd-journal,input -s /usr/bin/zsh hsp"
+
+echo "Enter a password for hsp"
+arch_chroot "passwd hsp"
+
+arch_chroot_user "curl -o /home/hsp/post.sh https://raw.githubusercontent.com/hspak/homelab/master/laptops/post.sh"
+arch_chroot_user "chmod +x /home/hsp/post.sh"
+arch_chroot_user "/home/hsp/post.sh"
+
+# ------ install, unmount and finish! ------
+arch_chroot "mkinitcpio -p linux"
+umount -R "$MNT"/boot
+umount -R "$MNT"
+cat << EOF
+
+"All done! reboot into disk. (systemctl reboot)"
+
+EOF
