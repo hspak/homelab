@@ -54,7 +54,7 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 pacman-key --init
 pacman-key --populate archlinux
 pacman -Sy archlinux-keyring
-pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh git iwd systemd-resolved
+pacstrap "$MNT" base linux linux-firmware intel-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh git iwd
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
@@ -64,10 +64,10 @@ echo 'tmpfs   			/home/hsp/.cache	tmpfs 	rw,size=6G,nodev,nosuid,uid=hsp,gid=use
 arch_chroot "systemctl enable fstrim.timer"
 
 # time stuff
-arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
 arch_chroot "systemctl enable systemd-timesyncd.service"
-arch_chroot "timedatectl set-ntp true"
-arch_chroot "hwclock --systohc"
+timedatectl set-ntp true
+timedatectl set-timezone America/Los_Angeles
+hwclock --systohc
 
 # locale stuff
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
@@ -90,7 +90,6 @@ arch_chroot "systemctl enable systemd-resolved"
 ln -sf /run/systemd/resolve/stub-resolv.conf "$MNT"/etc/resolv.conf
 
 # hostname
-arch_chroot "hostnamectl set-hostname fmw"
 echo "fmw" >> "$MNT"/etc/hostname
 
 # ------ user management ------
