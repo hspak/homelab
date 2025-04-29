@@ -1,5 +1,3 @@
-#!/bin/bash
-
 # Tools
 sudo pacman -S base-devel zig
 
@@ -12,14 +10,22 @@ cd dotfiles
 ./setup
 cd
 
-# Essentials
-sudo pacman -S firefox neovim
-
 # WM
-sudo pacman -S hyprland uwsm libnewt
+PKGS_WM="hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-protal-hyprland uwsm libnewt"
+
+# Graphics
+PKGS_GRAPHICS="mesa intel-media-driver vulkan-intel"
+
+# Visual
+PKGS_VISUAL="adw-gtk-theme qt5ct qt6ct kvantum breeze-icons"
 
 # Fonts
-sudo pacman -S noto-fonts noto-fonts-extra noto-fonts-emoji
+PKGS_FONTS="noto-fonts noto-fonts-extra noto-fonts-emoji"
+
+# Utils
+PKGS_ESSENTIALS="firefox neovim wl-clipboard libnotify ranger"
+
+sudo pacman -S $PKGS_UTILS $PKGS_FONTS $PKGS_VISUAL $PKGS_GRAPHICS $PKGS_WM $PKGS_ESSENTIALS
 
 # AUR
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --import
@@ -31,4 +37,4 @@ makepkg -si
 cd
 rm -rf ~/tmp
 
-zur -S 1password
+zur -S 1password qt6ct
