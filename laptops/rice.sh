@@ -20,7 +20,7 @@ PKGS_GRAPHICS="mesa intel-media-driver vulkan-intel"
 PKGS_VISUAL="adw-gtk-theme qt5ct qt6ct kvantum breeze-icons"
 
 # Fonts
-PKGS_FONTS="noto-fonts noto-fonts-extra noto-fonts-emoji"
+PKGS_FONTS="noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk"
 
 # Utils
 PKGS_ESSENTIALS="firefox neovim wl-clipboard libnotify ranger"
