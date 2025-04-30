@@ -14,7 +14,7 @@ cd
 PKGS_WM="hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-protal-hyprland uwsm libnewt"
 
 # Graphics
-PKGS_GRAPHICS="mesa intel-media-driver vulkan-intel"
+PKGS_GRAPHICS="mesa intel-media-driver vulkan-intel egl-wayland qt5-wayland qt6-wayland"
 
 # Visual
 PKGS_VISUAL="adw-gtk-theme qt5ct qt6ct kvantum breeze-icons"
