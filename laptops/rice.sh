@@ -1,6 +1,3 @@
-# Tools
-sudo pacman -S base-devel zig
-
 mkdir -p ~/code/z
 curl -o ~/code/z/z.sh https://raw.githubusercontent.com/rupa/z/master/z.sh
 touch ~/.z
@@ -11,21 +8,24 @@ cd dotfiles
 cd
 
 # WM
-PKGS_WM="hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-protal-hyprland uwsm libnewt"
+PKGS_WM=(hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland uwsm libnewt)
 
 # Graphics
-PKGS_GRAPHICS="mesa intel-media-driver vulkan-intel egl-wayland qt5-wayland qt6-wayland"
+PKGS_GRAPHICS=(mesa intel-media-driver vulkan-intel egl-wayland qt5-wayland qt6-wayland)
 
 # Visual
-PKGS_VISUAL="adw-gtk-theme qt5ct qt6ct kvantum breeze-icons"
+PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons)
 
 # Fonts
-PKGS_FONTS="noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk"
+PKGS_FONTS=(noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk)
 
 # Utils
-PKGS_ESSENTIALS="firefox neovim wl-clipboard libnotify ranger"
+PKGS_UTILS=(neovim wl-clipboard libnotify ranger pavucontrol pipewire-pulse libcamera pipewire-libcamera bluez)
 
-sudo pacman -S $PKGS_UTILS $PKGS_FONTS $PKGS_VISUAL $PKGS_GRAPHICS $PKGS_WM $PKGS_ESSENTIALS
+# Lang
+PKGS_LANG=(zls zig go rustup)
+
+sudo pacman -S $PKGS_UTILS $PKGS_FONTS $PKGS_VISUAL $PKGS_GRAPHICS $PKGS_WM $PKGS_UTILS $PKGS_LANG
 
 # AUR
 curl -sS https://downloads.1password.com/linux/keys/1password.asc | gpg --import
@@ -37,4 +37,4 @@ makepkg -si
 cd
 rm -rf ~/tmp
 
-zur -S 1password qt6ct
+zur -S 1password qt6ct-kde google-chrome
