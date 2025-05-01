@@ -8,10 +8,10 @@ cd dotfiles
 cd
 
 # WM
-PKGS_WM=(hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland uwsm libnewt)
+PKGS_WM=(hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland xdg-desktop-portal-gtk uwsm libnewt)
 
 # Graphics
-PKGS_GRAPHICS=(mesa intel-media-driver vulkan-intel egl-wayland qt5-wayland qt6-wayland)
+PKGS_GRAPHICS=(mesa intel-media-driver intel-media-sdk vulkan-intel egl-wayland qt5-wayland qt6-wayland)
 
 # Visual
 PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons)
@@ -20,7 +20,7 @@ PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons)
 PKGS_FONTS=(noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk)
 
 # Utils
-PKGS_UTILS=(neovim wl-clipboard libnotify ranger pavucontrol pipewire-pulse libcamera pipewire-libcamera bluez)
+PKGS_UTILS=(neovim wl-clipboard libnotify ranger pavucontrol pipewire-pulse libcamera pipewire-libcamera bluez dunst)
 
 # Lang
 PKGS_LANG=(zls zig go rustup)
