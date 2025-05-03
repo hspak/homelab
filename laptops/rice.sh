@@ -8,13 +8,13 @@ cd dotfiles
 cd
 
 # WM
-PKGS_WM=(hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland xdg-desktop-portal-gtk uwsm libnewt)
+PKGS_WM=(hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland xdg-desktop-portal-gtk xdg-desktop-portal-kde uwsm libnewt)
 
 # Graphics
 PKGS_GRAPHICS=(mesa intel-media-driver intel-media-sdk vulkan-intel egl-wayland qt5-wayland qt6-wayland)
 
 # Visual
-PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons)
+PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons gnome-themes-extra nwg-look)
 
 # Fonts
 PKGS_FONTS=(noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk)
