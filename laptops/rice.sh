@@ -17,7 +17,7 @@ PKGS_GRAPHICS=(mesa intel-media-driver intel-media-sdk vulkan-intel egl-wayland 
 PKGS_VISUAL=(adw-gtk-theme qt5ct kvantum breeze-icons gnome-themes-extra nwg-look)
 
 # Fonts
-PKGS_FONTS=(noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk)
+PKGS_FONTS=(noto-fonts noto-fonts-extra noto-fonts-emoji noto-fonts-cjk otf-font-awesome ttf-meslo-nerd)
 
 # Utils
 PKGS_UTILS=(neovim wl-clipboard libnotify ranger pavucontrol pipewire-pulse libcamera pipewire-libcamera bluez dunst)
@@ -37,4 +37,4 @@ makepkg -si
 cd
 rm -rf ~/tmp
 
-zur -S 1password qt6ct-kde google-chrome
+zur -S 1password qt6ct-kde google-chrome tofi
