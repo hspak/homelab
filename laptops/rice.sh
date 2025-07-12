@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mkdir -p ~/code/z
 curl -o ~/code/z/z.sh https://raw.githubusercontent.com/rupa/z/master/z.sh
 touch ~/.z
