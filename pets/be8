@@ -44,11 +44,7 @@ mount "$boot_part" "$MNT"/boot
 # ------ package installation ------
 echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
-pacman-key --init
-pacman-key --populate archlinux
-pacman-key --refresh-keys
-pacstrap "$MNT" archlinux-keyring
-pacstrap "$MNT" base base-devel linux linux-firmware amd-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
+pacstrap -K "$MNT" base base-devel linux linux-firmware amd-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
 
 # ------ setting installation ------
 genfstab -t PARTUUID "$MNT" >> "$MNT"/etc/fstab
