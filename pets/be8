@@ -32,8 +32,8 @@ sgdisk -o $drive
 # 1. 256MB for GPT boot parition on FAT32
 # 2. Everything else on EXT4
 sgdisk -n 1:2048:526336 -n 2:528384:$(sgdisk -E $drive) -t 1:EF00 -t 2:8300 $drive
-boot_part="${drive}1"
-root_part="${drive}2"
+boot_part="${drive}p1"
+root_part="${drive}p2"
 sgdisk -p $drive
 mkfs.ext4 -F "$root_part"
 mount "$root_part" "$MNT"
@@ -46,6 +46,8 @@ echo "$MIRROR" >> /etc/pacman.d/mirrorlist
 
 pacman-key --init
 pacman-key --populate archlinux
+pacman-key --refresh-keys
+pacstrap "$MNT" archlinux-keyring
 pacstrap "$MNT" base base-devel linux linux-firmware amd-ucode sudo pkgfile ripgrep fd rsync htop neovim zsh bash openssh
 
 # ------ setting installation ------
@@ -57,12 +59,10 @@ arch_chroot "systemctl enable fstrim.timer"
 # time stuff
 arch_chroot "ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime"
 arch_chroot "systemctl enable systemd-timesyncd.service"
-arch_chroot "timedatectl set-ntp true"
 arch_chroot "hwclock --systohc"
 
 # locale stuff
 echo "en_US.UTF-8 UTF-8" >> "$MNT"/etc/locale.gen
-arch_chroot "localectl set-locale LANG=en_US.UTF-8"
 arch_chroot "locale-gen"
 echo "LANG=en_US.UTF-8" >> "$MNT"/etc/locale.conf
 
@@ -89,7 +89,6 @@ echo "DHCP=yes" >> "$MNT"/etc/systemd/network/20-enp1s0.network
 arch_chroot "systemctl enable systemd-networkd"
 
 # hostname
-arch_chroot "hostnamectl set-hostname be8"`
 echo "be8" >> "$MNT"/etc/hostname
 
 # ------ user management ------
@@ -121,3 +120,6 @@ cat << EOF
 "All done! reboot into disk. (systemctl reboot)"
 
 EOF
+#arch_chroot "timedatectl set-ntp true"
+#arch_chroot "localectl set-locale LANG=en_US.UTF-8"
+#arch_chroot "hostnamectl set-hostname be8"`
